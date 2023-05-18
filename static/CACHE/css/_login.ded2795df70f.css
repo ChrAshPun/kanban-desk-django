@@ -1,0 +1,75 @@
+/* line 3, accounts/static/scss/_login.scss */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Helvetica Neue', sans-serif; }
+
+/* line 10, accounts/static/scss/_login.scss */
+body {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  overflow: hidden; }
+  /* line 18, accounts/static/scss/_login.scss */
+  body .banner-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+    z-index: -1; }
+  /* line 26, accounts/static/scss/_login.scss */
+  body .flex-item {
+    flex: 1; }
+  /* line 29, accounts/static/scss/_login.scss */
+  body .login-banner {
+    position: relative; }
+    /* line 31, accounts/static/scss/_login.scss */
+    body .login-banner .content {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      width: 100%;
+      max-width: 550px;
+      height: 500px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 80px 50px;
+      z-index: 2; }
+      /* line 46, accounts/static/scss/_login.scss */
+      body .login-banner .content .flex-row {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center; }
+        /* line 51, accounts/static/scss/_login.scss */
+        body .login-banner .content .flex-row .kanban-desk-logo {
+          width: 55px;
+          height: 55px;
+          margin-right: 20px; }
+        /* line 56, accounts/static/scss/_login.scss */
+        body .login-banner .content .flex-row h1 {
+          font-size: 52px;
+          color: #ffffff; }
+      /* line 61, accounts/static/scss/_login.scss */
+      body .login-banner .content .by {
+        font-size: 26px;
+        color: #ffffff;
+        margin: 10px 0; }
+      /* line 66, accounts/static/scss/_login.scss */
+      body .login-banner .content .note-to-employers {
+        font-size: 16px;
+        color: #ffffff;
+        margin: 4px 0; }
+  /* line 73, accounts/static/scss/_login.scss */
+  body .user-form {
+    background-color: #ffffff;
+    box-shadow: -4px 0 6px 6px rgba(0, 0, 0, 0.1); }

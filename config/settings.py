@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # my apps
     "accounts",
+    "project",
     # sass/scss
     'compressor',
 ]
@@ -137,6 +138,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [    
+    BASE_DIR / "config/static",   
     BASE_DIR / "accounts/static",    
 ]
 

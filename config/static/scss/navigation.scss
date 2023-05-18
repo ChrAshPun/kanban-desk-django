@@ -1,0 +1,94 @@
+@import "variables";
+
+body  {
+  min-height: 700px;
+  height: 100vh;
+  nav {
+    width: 100vw;
+    height: 46px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $primary-white-color;
+    padding: 0 20px;
+    border-bottom: solid 1px#C6C6C6;
+    .title {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      .kanban-desk-logo {
+        width: 22px;
+        height: 22px;
+        margin-right: 8px;
+      }
+      p {
+        font-size: 16px;
+        font-weight: 600;
+        color: $primary-teal-color;
+      }
+    }
+    .sign-out {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      text-decoration: none;
+      cursor: pointer;
+      img {
+        height: 18px;
+        margin-right: 8px;
+      }
+      p {
+        font-size: 14px;
+        color: $primary-black-color;
+        white-space: nowrap;
+      }
+    }
+  }
+  
+  main {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    .general-sidebar {
+      width: 62px;
+      height: 100%;
+      background-color: $primary-teal-color;
+      padding: 60px 0;
+      ul {
+        li {
+          width: 100%;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          list-style-type: none;
+          padding: 12px 0;
+          cursor: pointer;
+          img {
+            width: 26px;
+          }
+        }
+        .active-item {
+          background-color: $nav-hover-teal-color;
+          .item-white-bar {
+            width: 6px;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: $primary-white-color;
+          }
+        }
+      }
+    }
+    .main-window {
+      padding: 60px 0 0 60px;
+    }
+  }
+}

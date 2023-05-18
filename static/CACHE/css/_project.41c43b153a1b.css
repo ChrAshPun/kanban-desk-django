@@ -1,0 +1,13 @@
+/* line 3, project/static/scss/_project.scss */
+.page-title {
+  color: #404040;
+  margin-bottom: 2px; }
+
+/* line 8, project/static/scss/_project.scss */
+.page-title-detail {
+  color: #7c7c7c;
+  margin-bottom: 30px; }
+
+/* line 13, project/static/scss/_project.scss */
+form {
+  width: 500px; }

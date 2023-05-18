@@ -5,11 +5,20 @@ Operating System: macOS Ventura 13.2.1
 PostgreSQL: postgres (PostgreSQL) 15.2
 pgAdmin 4: v7.1
 
-pip freeze:
-  Django==4.2.1
-  psycopg2==2.9.6
-  python-dotenv==1.0.0
+### pip freeze:
+asgiref==3.6.0
+Django==4.2.1
+django-appconf==1.0.5
+django-compressor==4.3.1
+django-libsass==0.9
+libsass==0.22.0
+psycopg2==2.9.6
+python-dotenv==1.0.0
+rcssmin==1.1.1
+rjsmin==1.2.1
+sqlparse==0.4.4
 
+### Week 01
 ## Create a Django project and connect to PostgreSQL
 Reference article: https://medium.com/@9cv9official/creating-a-django-web-application-with-a-postgresql-database-on-windows-c1eea38fe294
 
@@ -602,6 +611,20 @@ When a web browser requests a static file, the web server serving your Django ap
 ### python manage.py collectstatic
 By default, `collectstatic` checks the static subdirectory of each installed app, as well as any other directories specified in `STATICFILES_DIRS`. 
 
+## Add global SCSS variables
+It will speed up development if I create some global variables and global classes throughout the application.
+
+1. Create a folder location for global variables
+I chose to put the `variables.scss` files in the project folder which is named `config`. The path is `config/static/sccs/variables.scss`
+2. Import variables
+In the `accounts` app's `scss` file, import the variables using `@import "../../../static/scss/variables.scss";` path
+3. Create the classes
+```
+.primary-white {
+  color: $primary-white-color;
+}
+```
+
 ## Add Authentication check 
 I know I can add an authentication check in the `base.html` (my last workplace used that approach) template but theres a more efficient way I can go about this. I can create a `middleware` that checks if the `user.is_authenticated` and `redirect('login')`. 
 
@@ -633,6 +656,95 @@ The `response = self.get_response(request)` took some research for me to underst
 
 I'm assuming that the `__call__` method is only called once per client request/response for each middleware, and it just waits for the view's outgoing response after it calls `response = self.get_response(request)` and then resumes. Essentially, the `__call__` method for each middleware has 3 parts: the code that runs during the incoming request,`response = self.get_response(request)`, then the code that runs during the outgoing response.
 
+The `@login_required` decorator before every view function is also an option. But I wanted the user authentication to occur globally.
+
+Reference article: https://stackoverflow.com/questions/64471090/redirect-to-login-page-with-middleware-is-causing-too-many-redirects-issue
+```
+Just think about it for a second. 1, 2, 3. No? Ok, you send the person that is not authenticated to the login page. When he gets there, he is not authenticated, so you send him to the login page. When he gets there, he is not authententicated, so you send him to the login page. 
+```
+`request.path != reverse('login')`
+
+## How to call a URL pattern by the app's namespace using the url template tag
+1. Add the `namespace` to `include()`
+2. From the app's `urls.py` file, set the `app_name = 'accounts'`
+3. Example of using `url template tag`
+```
+<a class="k-btn teal-flat-btn full-width" href="{% url 'accounts:signup' %}">Create Account</a>
+```
+
+## TEMPLATES 01
+## Create the the Signup Page template and Login Page template
+Note: There were a few things I noticed I needed to add to these pages 
+1. Add `autofocus` to the first field of every form
+2. Redirect to `home` on successful `signup` or `login` - `success_url = reverse_lazy("home")`
+3. I needed to stop the `AutoMiddleware` from redirecting `admin` to `auth/login`.
+```
+def __call__(self, request):
+    # Code to be executed for each request before the view (and later middleware) are called.
+    if not request.user.is_authenticated and not request.path.startswith('/admin/') and request.path not in self.protected_paths:
+        return redirect('login')
+    response = self.get_response(request)
+    # Code to be executed for each request/response after the view is called.
+    return response
+```
+I noticed I had to use `self` in order to access the `protected_paths` variable. This made me realize `AutoMiddleware` is not a static class. 
+
+`ME`
+so django middleware are not static classes they need to be instantiated
+
+`ChatGPT`
+Yes, Django middleware classes are not static classes. They need to be instantiated because each middleware class instance can have its own state and behavior. When Django processes a request, it creates an instance of each middleware class defined in the MIDDLEWARE setting and invokes the __call__ method of each instance in the order specified.
+
+### Redirect authenticated users to conditional view
+After a successful login:
+Custom AutheMiddleware redirects (most) requests to the `'login'` URL pattern. But once the user signs in, the `success_url` redirects to the `'home'` URL pattern. The home URL pattern then has a `redirect_view`. If the current user has any `projects` that exists, redirect to `'project:view'` else `'project:create'`.
+
+## TEMPLATES 02
+## Create the Nav template and General Sidebar template
+I decided to add the navbar and sidebar in the `base.html`. 
+
+### Add Logout functionality
+1. I was able to easily set up `logout` adding `href="{% url 'logout' %}` to an `a element`.
+2. Next, I set up `LOGOUT_REDIRECT_URL = "home"` to redirect the user to the `'home'` URL pattern.
+
+### Set up the active and inactive nav items
+Conditionally add the `active-item` class to the nav items that represent the current URL.
+
+### HttpRequest.resolver_match
+https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest.resolver_match
+An instance of `ResolverMatch` representing the `resolved URL`. This attribute is only set after URL resolving took place, which means it’s available in all views but not in middleware ...
+
+1. Use `resolver_match` compare the resolved URL to a URL pattern name to conditionally add `active-item` class
+```
+<li class="{% if request.resolver_match.view_name == 'accounts:settings' %}active-item{% endif %}">
+```
+or
+```
+<li class="{% if '/project/' in request.path %}active-item{% endif %}">
+```
+## How to add variables to the context dictionary when using class-based views
+The ContextMixin class is part of the django.views.generic.base module. It is a base class for many generic views, including TemplateView, ListView, DetailView, etc. The get_context_data method is defined in the ContextMixin class.
+
+As you can see, the get_context_data method simply returns the kwargs dictionary, which represents the context data. It also adds the view key to the dictionary with the value being the current view instance.
+
+Yes, super() is a built-in Python function that returns a temporary object of the superclass, allowing you to call its methods. In the context of Django views, super() is typically used to call the get_context_data method of the parent class.
+
+def UserSettingsView(request):
+    my_variable = 'my_value'
+    context = {
+        'my_variable': my_variable,
+    }
+    return render(request, 'user_settings.html', context)
+
+class UserSettingsView(TemplateView):
+    template_name = 'user_settings.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['my_variable'] = 'value'
+        return context
+
+In Django, the request object represents an HTTP request made by a client to a server. It is an instance of the HttpRequest class, 
 
 
 
@@ -647,6 +759,12 @@ I'm assuming that the `__call__` method is only called once per client request/r
 
 
 
+
+
+## Choices
+https://docs.djangoproject.com/en/4.2/ref/models/fields/#choices
+
+Need to add UPDATE existing user.
 ### 04/2023 - I need to create ITBlog models and API endpoint for the ITBlog (React) frontend
 1. Create a Django app - python manage.py startapp appname
 2. In the settings.py, add app to INSTALLED_APPS

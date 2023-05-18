@@ -1,0 +1,22 @@
+<!-- templates/project_create.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h2 class="page-title">New Project</h2>
+  <p class="page-title-detail">Create a new project</p>
+  <form method="post">
+    {% csrf_token %}
+    <p class="k-input">
+      <label for="id_name">Name</label>
+      <input type="text" name="name"placeholder="Name" required id="id_name" autofocus>
+    </p>
+    <p class="k-input">
+      <label for="id_description">Description</label>
+      <textarea type="description" name="description" id="id_description"></textarea>
+    </p>
+    <div class="btn-container">
+      <button class="guest-user-btn k-btn teal-btn" type="submit">Create Project</button>
+    </div>
+  </form>
+{% endblock %}

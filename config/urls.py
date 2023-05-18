@@ -18,17 +18,23 @@ from django.contrib import admin
 from django.urls import path, include
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
+from project.models import Project
 
-@login_required
 def redirect_view(request):
-    # I don't need to add user.is_authenticated or @login_required
+    # Technically, I don't need to use user.is_authenticated or @login_required
     # because of the custom AuthMiddleware
-    return redirect('project_view') 
+    # return redirect('project_view') 
+    # user_projects = Project.objects.filter(owner=request.user) RETURNS <QuerySet []>
+    user_projects = Project.objects.filter(owner=request.user).exists()
+    print(user_projects) # boolean
+    if (user_projects):
+        return redirect('project:view')
+    return redirect('project:create') 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('django.contrib.auth.urls')),
     path('', redirect_view, name='home'), 
-    path("accounts/", include("accounts.urls")),  
-    path("project/", include("projects.urls")),  
+    path("accounts/", include("accounts.urls", namespace="accounts")),  
+    path("project/", include("project.urls", namespace="project")),  
 ]

@@ -1,0 +1,15 @@
+@import "../../../static/scss/variables.scss";
+
+.page-title {
+  color: $primary-black-color;
+  margin-bottom: 2px;
+}
+
+.page-title-detail {
+  color: #7c7c7c;
+  margin-bottom: 30px;
+}
+
+form {
+  width: 500px;
+}

@@ -1,0 +1,19 @@
+/* line 4, config/static/scss/base.scss */
+.k-input {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 15px; }
+  /* line 10, config/static/scss/base.scss */
+  .k-input label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #404040;
+    margin-bottom: 4px; }
+  /* line 16, config/static/scss/base.scss */
+  .k-input input {
+    height: 42px;
+    background-color: #ffffff;
+    border: solid 1px #C6C6C6;
+    border-radius: 4px; }

@@ -1,0 +1,5 @@
+/* line 3, accounts/static/scss/_login.scss */
+body .login-banner .login-banner__content {
+  width: 100%;
+  max-width: 550px;
+  height: 500px; }
