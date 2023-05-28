@@ -74,7 +74,9 @@ https://stackoverflow.com/questions/31125740/postgresql-keeps-prompting-for-a-pa
 
 2a. When I installed PostgreSQL from postgresql.org I created a superuser called `postgres`
 3a. Run `psql -U postgres` and enter the password. If you forgot the password, you need to reinstall PostgreSQL.
-4a. `\q` to quit
+4a. Connect to the database `\c kanbandesk`
+5a. View available data tables `\dt`
+6a. `\q` to quit
 
 ### Install pgAdmin
 https://www.pgadmin.org/
@@ -699,18 +701,16 @@ Yes, Django middleware classes are not static classes. They need to be instantia
 After a successful login:
 Custom AutheMiddleware redirects (most) requests to the `'login'` URL pattern. But once the user signs in, the `success_url` redirects to the `'home'` URL pattern. The home URL pattern then has a `redirect_view`. If the current user has any `projects` that exists, redirect to `'project:view'` else `'project:create'`.
 
-## TEMPLATES 02
-## Create the Nav template and General Sidebar template
+## TEMPLATES 02 - Create the Nav template and General Sidebar template
 I decided to add the navbar and sidebar in the `base.html`. 
 
 ### Add Logout functionality
 1. I was able to easily set up `logout` adding `href="{% url 'logout' %}` to an `a element`.
 2. Next, I set up `LOGOUT_REDIRECT_URL = "home"` to redirect the user to the `'home'` URL pattern.
 
-### Set up the active and inactive nav items
+### Set up the active and inactive nav items using HttpRequest.resolver_match
 Conditionally add the `active-item` class to the nav items that represent the current URL.
 
-### HttpRequest.resolver_match
 https://docs.djangoproject.com/en/dev/ref/request-response/#django.http.HttpRequest.resolver_match
 An instance of `ResolverMatch` representing the `resolved URL`. This attribute is only set after URL resolving took place, which means it’s available in all views but not in middleware ...
 
@@ -722,20 +722,28 @@ or
 ```
 <li class="{% if '/project/' in request.path %}active-item{% endif %}">
 ```
-## How to add variables to the context dictionary when using class-based views
-The ContextMixin class is part of the django.views.generic.base module. It is a base class for many generic views, including TemplateView, ListView, DetailView, etc. The get_context_data method is defined in the ContextMixin class.
+## TEMPLATES 03 - Create the project_create template and user_settings template
 
-As you can see, the get_context_data method simply returns the kwargs dictionary, which represents the context data. It also adds the view key to the dictionary with the value being the current view instance.
-
-Yes, super() is a built-in Python function that returns a temporary object of the superclass, allowing you to call its methods. In the context of Django views, super() is typically used to call the get_context_data method of the parent class.
-
+### Functional views vs Class-based views
+### Adding variables to the context dictionary using functional views
+The `render()` method renders the template with the provided `context` and returns an `HttpResponse` object containing the rendered content. It is an instance of the HttpRequest class.
+The `request` object `(method, session, cookies, user, path, etc)` represents an HTTP request made by a client to the server. 
+The `context` dictionary will contain data passed by the user and also modifications made from the context processors. The context processors have access to the `request` object and can use its properties to modify the `context` data.
+```
 def UserSettingsView(request):
     my_variable = 'my_value'
     context = {
         'my_variable': my_variable,
     }
     return render(request, 'user_settings.html', context)
+```
+### How to add variables to the context dictionary when using class-based views
+The `ContextMixin` class is part of the `django.views.generic.base` module. It is a base class for many generic views, including TemplateView, ListView, DetailView, etc. The `get_context_data` method is defined in the `ContextMixin` class.
 
+The `get_context_data` method returns the kwargs dictionary, which represents the `context` data. It also adds the `view key` to the dictionary with the value being the current view instance.
+
+`super()` is a built-in Python function that returns a temporary object of the` superclass`, allowing you to call its methods. In the context of Django views, `super()` is typically used to call the `get_context_data` method of the parent class.
+```
 class UserSettingsView(TemplateView):
     template_name = 'user_settings.html'
 
@@ -743,16 +751,73 @@ class UserSettingsView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['my_variable'] = 'value'
         return context
+```
+### @login_required vs LoginRequiredMixin
+Use `LoginRequiredMixin` with class-based views and the `@login_required` decorator with function-based views.             
 
-In Django, the request object represents an HTTP request made by a client to a server. It is an instance of the HttpRequest class, 
+### Create ProjectCreateView and use form_valid to automatically set a the owner field
+`form_valid` method is called after the form is submitted and its data is validated successfully. It is part of the processing flow that occurs when a valid form is submitted. Calling `super().form_valid(form)` invokes the default behavior of the `form_valid` method, which saves the form and performs the redirection specified by the `success_url`.
 
+### Add Project to Admin page
+```
+from django.contrib import admin
+from .models import Project
 
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description', 'date_created', 'date_updated', 'owner')
 
+admin.site.register(Project, ProjectAdmin)
 
+    def __str__(self):
+        return self.name
+```
 
+## Create UserDeleteView 
+The `UserDeleteView` will not use a template because the form is within `user_settings.html`. It also is going to `DELETE` the currently signed in user without passing `user.pk` to the URL pattern. I had a functional view that worked but decided to use the built-in `DeleteView`.
 
+1. Override the `get_object()` method to retrieve the currently logged-in user as the object to be deleted
+The `get_object()` method is responsible for fetching the object from the database based on the provided identifier. By default, it uses the `pk` URL parameter to fetch the object, but you can customize this behavior by overriding the method in your view.
+2. Send the POST request on submit
+https://stackoverflow.com/questions/17475324/django-deleteview-without-confirmation-template
+`DeleteView` responds to `POST` and `GET` requests, the `GET` request displays the confirmation template, while `POST` deletes instance.
+You can send `POST` request, without confirmation with form using:
+```
+<form method="post" action="{% url 'accounts:delete' %}"> 
+```
+3. Make sure to set the submit button to `value="Delete"`
+```
+<button class="k-btn sm-btn-margin danger-btn" type="submit" value="Delete">Confirm Delete</button>
+```
 
+Yes, that's correct. In a DetailView, self.object represents the object that will be displayed in the template. By default, DetailView retrieves the object using the get_object() method, which uses the URL parameters (e.g., primary key) to fetch the object from the database.
 
+However, you can override the get_object() method in your DetailView subclass to customize how the object is retrieved. 
+
+In the get() method of a class-based view, self refers to the instance of the view class itself. 
+
+In the line context = self.get_context_data(object=self.object), self.get_context_data() is responsible for collecting the context data for the view. By passing object=self.object, it sets the object variable in the context dictionary to the value of self.object, which is the Project instance in this case.
+
+Then, return self.render_to_response(context) generates an HTTP response by rendering the template with the provided context data. It uses the context dictionary to populate the template variables and generate the final HTML response.
+
+From ChatGPT:
+In Django, the order of processing a client request typically follows these steps:
+
+Middleware: The incoming client request passes through the middleware layers before reaching the view. Middleware components can perform various operations, such as authentication, session handling, logging, modifying request/response objects, etc.
+
+View: The view function or class-based view is responsible for processing the client request and returning a response. It performs the necessary operations, such as retrieving data from the database, processing forms, rendering templates, and constructing a response.
+
+Outgoing Request: If the view needs to communicate with external resources, such as making API calls or accessing remote services, it can initiate outgoing requests as needed. This can include making HTTP requests to external APIs or services.
+
+Middleware (again): After the view has finished processing the request and obtained a response, the response passes through the middleware layers again in the reverse order. Middleware components can modify the response, add headers, perform post-processing, etc.
+
+Template Rendering: If the view uses a template, the response may involve rendering the template with the provided context data. The template engine processes the template, substituting variables and executing template tags, resulting in a final HTML or other output.
+
+Outgoing to Client: Finally, the response, whether it's a rendered template or other content, is sent back to the client as an HTTP response.
+
+## Project UpdateView
+https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/#updateview
+
+In the case of the CreateView and UpdateView (and some other similar views), self.object represents the newly created or updated object that is associated with the form being processed. It is typically set after a successful form submission or update.
 
 
 

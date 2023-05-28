@@ -34,8 +34,10 @@ body  {
       flex-direction: row;
       justify-content: flex-end;
       align-items: center;
+      text-decoration: none;
+      cursor: pointer;
       img {
-        height: 20px;
+        height: 18px;
         margin-right: 8px;
       }
       p {
@@ -68,6 +70,12 @@ body  {
           list-style-type: none;
           padding: 12px 0;
           cursor: pointer;
+          img {
+            width: 26px;
+          }
+        }
+        .active-item {
+          background-color: $nav-hover-teal-color;
           .item-white-bar {
             width: 6px;
             height: 100%;
@@ -76,18 +84,11 @@ body  {
             left: 0;
             background-color: $primary-white-color;
           }
-          img {
-            width: 26px;
-          }
-        }
-        .active-item {
-          background-color: $nav-hover-teal-color;
         }
       }
     }
     .main-window {
-      width: 500px;
-      padding: 60px 0 0 50px;
+      padding: 60px 0 0 60px;
     }
   }
 }

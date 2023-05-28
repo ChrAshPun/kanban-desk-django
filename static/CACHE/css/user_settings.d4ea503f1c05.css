@@ -1,0 +1,39 @@
+/* line 4, accounts/static/scss/user_settings.scss */
+.user-settings-page main {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start; }
+  /* line 10, accounts/static/scss/user_settings.scss */
+  .user-settings-page main .user-info {
+    width: 100%; }
+    /* line 12, accounts/static/scss/user_settings.scss */
+    .user-settings-page main .user-info .row {
+      width: 100%;
+      height: 42px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: solid 1px #C6C6C6; }
+      /* line 20, accounts/static/scss/user_settings.scss */
+      .user-settings-page main .user-info .row p:last-child {
+        font-weight: 500; }
+    /* line 24, accounts/static/scss/user_settings.scss */
+    .user-settings-page main .user-info .row:last-child {
+      margin-bottom: 25px; }
+
+/* line 30, accounts/static/scss/user_settings.scss */
+.user-settings-page #target-modal form {
+  width: 400px; }
+  /* line 32, accounts/static/scss/user_settings.scss */
+  .user-settings-page #target-modal form h2 {
+    margin-bottom: 40px; }
+  /* line 35, accounts/static/scss/user_settings.scss */
+  .user-settings-page #target-modal form p {
+    line-height: 2;
+    margin-bottom: 25px; }
+    /* line 38, accounts/static/scss/user_settings.scss */
+    .user-settings-page #target-modal form p .bold {
+      font-weight: 500; }

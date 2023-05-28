@@ -1,0 +1,25 @@
+/* line 3, accounts/static/scss/user_settings.scss */
+.user-settings-page {
+  width: 100%;
+  height: 100%; }
+  /* line 6, accounts/static/scss/user_settings.scss */
+  .user-settings-page main {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start; }
+    /* line 13, accounts/static/scss/user_settings.scss */
+    .user-settings-page main .user-info .row {
+      height: 42px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: solid 1px #C6C6C6; }
+      /* line 20, accounts/static/scss/user_settings.scss */
+      .user-settings-page main .user-info .row p:last-child {
+        font-weight: 500; }
+    /* line 24, accounts/static/scss/user_settings.scss */
+    .user-settings-page main .user-info .row:last-child {
+      margin-bottom: 25px; }

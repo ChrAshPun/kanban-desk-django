@@ -1,0 +1,29 @@
+@import "../../../static/scss/variables.scss";
+
+.user-settings-page {
+  main {
+    width: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    .user-info {
+      width: 100%;
+      .row {
+        width: 100%;
+        height: 42px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: solid 1px#C6C6C6;
+        p:last-child {
+          font-weight: 500;
+        }
+      }
+      .row:last-child {      
+        margin-bottom: 25px;
+      }
+    }
+  }
+}

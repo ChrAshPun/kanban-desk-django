@@ -1,11 +1,12 @@
 # accounts/urls.py
 from django.urls import path
-from .views import SignUpView, UserDeleteView, UserSettingsView
+from .views import UserLogoutView, SignUpView, UserSettingsView, UserDeleteView
 
 app_name = 'accounts'
 
 urlpatterns = [
+    path('logout/', UserLogoutView.as_view(), name='logout'),
     path('signup/', SignUpView.as_view(), name='signup'),
-    path('user/<int:pk>/delete', UserDeleteView.as_view(), name='delete'),
     path('settings/', UserSettingsView.as_view(), name='settings'),
+    path('delete/', UserDeleteView.as_view(), name='delete'),
 ]

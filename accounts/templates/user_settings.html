@@ -1,0 +1,58 @@
+<!-- templates/project_create.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="user-settings-page main-window-padding">
+    <main>
+      <h2 class="page-title">Profile</h2>
+      <p class="page-title-detail">Account settings</p>
+      <div class="user-info">
+        <div class="row">
+          <p>Username</p>
+          <p>{{ user.username }}</p>
+        </div>
+        <div class="row">
+          <p>Projects</p>
+          <p>{{ user_projects_count }}</p>
+        </div>
+      </div>
+      <div class="btn-container">
+        <a id="toggle-modal" class="k-btn danger-btn">Delete Account</a>
+      </div>
+    </main>
+    <div id="target-modal" class="modal-dialog display-none">
+      <form method="post" action="{% url 'accounts:delete' %}">
+        {% csrf_token %}
+        <h2>Are you sure?</h2>
+        <p>You are about to delete your account "<span class="bold">{{ user.username }}</span>". Deleting your 
+          account will delete all existing projects and tasks.</p>
+        <div class="btn-container">
+          <button id="cancel-btn" class="k-btn cancel-btn">Cancel</button>
+          <button class="k-btn sm-btn-margin danger-btn" type="submit" value="Delete">Confirm Delete</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    $(document).ready(function() {
+      $("#toggle-modal").click(function() {
+        if ($('#target-modal').hasClass('display-none')) {
+          $("#target-modal").removeClass("display-none");
+          $("#target-modal").addClass("display-flex");
+          $("#target-modal").addClass("show-modal");
+        } else {
+          $("#target-modal").toggleClass("show-modal");
+          $("#target-modal").toggleClass("hide-modal");
+        }
+      });
+
+      $("#cancel-btn").click(function(event) {
+        event.preventDefault(); // do not submit form
+        $("#target-modal").removeClass("show-modal");
+        $("#target-modal").addClass("hide-modal");
+      });
+    });
+  </script>
+{% endblock %}

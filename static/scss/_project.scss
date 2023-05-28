@@ -1,11 +1,15 @@
-@import "variables";
+@import "../../../static/scss/variables.scss";
 
-h2 {
+.page-title {
   color: $primary-black-color;
+  margin-bottom: 2px;
+}
+
+.page-title-detail {
+  color: #7c7c7c;
   margin-bottom: 30px;
 }
 
-.title-detail {
-  color: #707070;
-  margin-bottom: 30px;
+form {
+  width: 500px;
 }

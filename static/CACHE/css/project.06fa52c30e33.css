@@ -1,0 +1,203 @@
+/* line 3, project/static/scss/project.scss */
+.page-title {
+  color: #404040;
+  margin-bottom: 2px; }
+
+/* line 8, project/static/scss/project.scss */
+.page-title-detail {
+  color: #7c7c7c;
+  margin-bottom: 30px; }
+
+/* line 13, project/static/scss/project.scss */
+.project-sidebar {
+  min-width: 240px;
+  max-width: 240px;
+  height: 100%;
+  background-color: #F0F2F4;
+  padding: 60px 20px; }
+  /* line 19, project/static/scss/project.scss */
+  .project-sidebar .title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #818181;
+    margin-bottom: 12px; }
+  /* line 26, project/static/scss/project.scss */
+  .project-sidebar ul li {
+    list-style-type: none;
+    padding: 8px 15px;
+    border-radius: 2px;
+    cursor: pointer; }
+    /* line 31, project/static/scss/project.scss */
+    .project-sidebar ul li a {
+      display: block;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #808080;
+      text-decoration: none; }
+  /* line 41, project/static/scss/project.scss */
+  .project-sidebar ul li:hover:not(.active-item) {
+    background-color: #DFE1E3; }
+  /* line 44, project/static/scss/project.scss */
+  .project-sidebar ul .active-item {
+    background-color: #DFEAEB; }
+    /* line 46, project/static/scss/project.scss */
+    .project-sidebar ul .active-item a {
+      color: #3AAFB9; }
+
+/* line 53, project/static/scss/project.scss */
+.project-create-window {
+  width: 500px; }
+
+/* line 57, project/static/scss/project.scss */
+.project-window {
+  flex: 1;
+  height: 100%; }
+  /* line 60, project/static/scss/project.scss */
+  .project-window .project-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 30px; }
+  /* line 65, project/static/scss/project.scss */
+  .project-window .project-navigation {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    border-bottom: solid 1px #F0F2F4;
+    margin-bottom: 30px; }
+    /* line 72, project/static/scss/project.scss */
+    .project-window .project-navigation a {
+      position: relative;
+      color: #707070;
+      padding: 10px 0;
+      text-decoration: none; }
+      /* line 77, project/static/scss/project.scss */
+      .project-window .project-navigation a .teal-line {
+        width: 100%;
+        position: absolute;
+        left: 0;
+        bottom: 0; }
+    /* line 84, project/static/scss/project.scss */
+    .project-window .project-navigation a:first-child {
+      margin-right: 20px; }
+    /* line 87, project/static/scss/project.scss */
+    .project-window .project-navigation .active-item {
+      color: #3AAFB9; }
+      /* line 89, project/static/scss/project.scss */
+      .project-window .project-navigation .active-item .teal-line {
+        width: 100%;
+        height: 4px;
+        background-color: #3AAFB9; }
+  /* line 96, project/static/scss/project.scss */
+  .project-window .new-task-container {
+    margin-bottom: 15px; }
+  /* line 99, project/static/scss/project.scss */
+  .project-window .settings-section {
+    width: 500px;
+    margin-bottom: 50px; }
+    /* line 102, project/static/scss/project.scss */
+    .project-window .settings-section .title {
+      font-size: 20px;
+      padding-bottom: 6px;
+      margin-bottom: 30px;
+      border-bottom: solid 1px #F0F2F4; }
+    /* line 108, project/static/scss/project.scss */
+    .project-window .settings-section .delete-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center; }
+  /* line 114, project/static/scss/project.scss */
+  .project-window .kanban-section {
+    flex: 1;
+    height: 600px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch; }
+    /* line 122, project/static/scss/project.scss */
+    .project-window .kanban-section .column {
+      width: 300px;
+      height: 100%;
+      background-color: #F0F2F4;
+      padding: 0 12px 30px 12px;
+      border-radius: 6px; }
+      /* line 128, project/static/scss/project.scss */
+      .project-window .kanban-section .column h3 {
+        padding: 15px 0; }
+      /* line 131, project/static/scss/project.scss */
+      .project-window .kanban-section .column .scroll-window {
+        height: 100%;
+        overflow-y: auto; }
+        /* line 134, project/static/scss/project.scss */
+        .project-window .kanban-section .column .scroll-window .task-item {
+          width: 100%;
+          height: 141px;
+          background-color: #FFF;
+          padding: 20px;
+          border-radius: 4px;
+          border: solid 1px #D5D5D5;
+          cursor: pointer; }
+          /* line 142, project/static/scss/project.scss */
+          .project-window .kanban-section .column .scroll-window .task-item .task-data {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-bottom: 15px; }
+            /* line 148, project/static/scss/project.scss */
+            .project-window .kanban-section .column .scroll-window .task-item .task-data .task-id {
+              font-size: 14px;
+              font-weight: 500;
+              text-align: center;
+              background-color: #ffffff;
+              padding: 2px 10px;
+              border: solid 1px #D3D3D3;
+              border-radius: 2px; }
+            /* line 157, project/static/scss/project.scss */
+            .project-window .kanban-section .column .scroll-window .task-item .task-data .priority-item {
+              font-size: 14px;
+              font-weight: 500;
+              text-align: center;
+              padding: 3px 11px;
+              border-radius: 2px;
+              margin-left: 8px; }
+            /* line 165, project/static/scss/project.scss */
+            .project-window .kanban-section .column .scroll-window .task-item .task-data .low-priority {
+              color: #30843A;
+              background-color: #C0E3C3; }
+            /* line 169, project/static/scss/project.scss */
+            .project-window .kanban-section .column .scroll-window .task-item .task-data .medium-priority {
+              color: #F37016;
+              background-color: #FFDCAB; }
+            /* line 173, project/static/scss/project.scss */
+            .project-window .kanban-section .column .scroll-window .task-item .task-data .high-priority {
+              color: #CC2629;
+              background-color: #FFC5CB; }
+          /* line 178, project/static/scss/project.scss */
+          .project-window .kanban-section .column .scroll-window .task-item .task-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #404040;
+            margin-bottom: 6px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis; }
+          /* line 187, project/static/scss/project.scss */
+          .project-window .kanban-section .column .scroll-window .task-item .task-description {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            height: 36px;
+            font-size: 16px;
+            color: #404040;
+            overflow: hidden;
+            text-overflow: ellipsis; }
+        /* line 198, project/static/scss/project.scss */
+        .project-window .kanban-section .column .scroll-window .task-item:not(:last-child) {
+          margin-bottom: 10px; }
+    /* line 203, project/static/scss/project.scss */
+    .project-window .kanban-section .column:not(:last-child) {
+      margin-right: 15px; }

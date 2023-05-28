@@ -1,0 +1,117 @@
+@import "../../../static/scss/variables.scss";
+
+.banner-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+  z-index: -1;
+}
+.flex-item {
+  flex: 1;
+}
+.login-banner {
+  position: relative;
+  .content {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 520px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 80px 50px;
+    z-index: 2;
+    .title {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
+      .kanban-desk-logo {
+        width: 55px;
+        height: 55px;
+        margin-right: 20px;
+      }
+      h1 {
+        font-size: 52px;
+      }
+    }
+    .by {
+      font-size: 26px;
+      font-weight: 500;
+      p {
+        margin: 8px 0;
+      }
+    }
+    .note-to-employers {
+      font-size: 16px;
+      font-weight: 500;
+      p {
+        margin: 4px 0;
+      }
+    }
+  }
+}
+.login-background {
+  background-color: $primary-white-color;
+  box-shadow: -4px 0 6px 6px rgba(0,0,0,0.10);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  .auth-form {
+    width: 360px;
+    margin-left: 60px;
+    .title {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+      .kanban-desk-logo {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+      }
+      h6 {
+        font-size: 22px;
+      }
+    }
+    h2 {
+      color: $primary-black-color;
+      margin-bottom: 30px;
+    }
+    .sign-in-btn {
+      margin-top: 20px;
+    }
+    .guest-user-btn {
+      margin-bottom: 5px;
+    }
+    .or-divider {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      color: #C6C6C6;
+      margin: 15px 0;
+      p {
+        font-size: 12px;
+        margin: 0 20px;
+      }
+      div {
+        width: 100%;
+        flex: 1;
+        height: 1px; 
+        background-color: #C6C6C6;
+      }
+    }
+  }
+}

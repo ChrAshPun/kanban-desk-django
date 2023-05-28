@@ -21,15 +21,11 @@ from django.contrib.auth.decorators import login_required
 from project.models import Project
 
 def redirect_view(request):
-    # Technically, I don't need to use user.is_authenticated or @login_required
-    # because of the custom AuthMiddleware
-    # return redirect('project_view') 
-    # user_projects = Project.objects.filter(owner=request.user) RETURNS <QuerySet []>
-    user_projects = Project.objects.filter(owner=request.user).exists()
-    print(user_projects) # boolean
-    if (user_projects):
-        return redirect('project:view')
-    return redirect('project:create') 
+    first_project = Project.objects.filter(owner=request.user).first()
+    if first_project:
+        return redirect('project:kanban', pk=first_project.pk)
+    else:
+        return redirect('project:create') 
 
 urlpatterns = [
     path('admin/', admin.site.urls),

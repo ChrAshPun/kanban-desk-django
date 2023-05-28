@@ -1,7 +1,0 @@
-<!-- templates/user_delete.html -->
-<h1>Delete Account</h1>
-<form method="POST" action="">
-  {% csrf_token %}
-  <p>Are you sure you want to delete your account "{{ user.username }}"?</p>
-  <input type="submit" value="Confirm">
-</form>

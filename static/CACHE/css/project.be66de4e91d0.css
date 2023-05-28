@@ -1,0 +1,51 @@
+/* line 3, project/static/scss/project.scss */
+.page-title {
+  color: #404040;
+  margin-bottom: 2px; }
+
+/* line 8, project/static/scss/project.scss */
+.page-title-detail {
+  color: #7c7c7c;
+  margin-bottom: 30px; }
+
+/* line 13, project/static/scss/project.scss */
+form {
+  width: 500px; }
+
+/* line 17, project/static/scss/project.scss */
+.project-view-page {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start; }
+  /* line 22, project/static/scss/project.scss */
+  .project-view-page .project-sidebar {
+    min-width: 240px;
+    max-width: 240px;
+    height: 100%;
+    background-color: #F0F2F4;
+    padding: 60px 20px; }
+    /* line 28, project/static/scss/project.scss */
+    .project-view-page .project-sidebar .title {
+      font-weight: 600;
+      color: #818181;
+      margin-bottom: 12px; }
+    /* line 34, project/static/scss/project.scss */
+    .project-view-page .project-sidebar ul li {
+      list-style-type: none;
+      padding: 8px 15px;
+      border-radius: 2px;
+      cursor: pointer; }
+      /* line 39, project/static/scss/project.scss */
+      .project-view-page .project-sidebar ul li a {
+        color: #808080;
+        text-decoration: none; }
+    /* line 44, project/static/scss/project.scss */
+    .project-view-page .project-sidebar ul li:hover:not(.active-item) {
+      background-color: #DFE1E3; }
+    /* line 47, project/static/scss/project.scss */
+    .project-view-page .project-sidebar ul .active-item {
+      background-color: #DFEAEB; }
+      /* line 49, project/static/scss/project.scss */
+      .project-view-page .project-sidebar ul .active-item a {
+        color: #3AAFB9; }
