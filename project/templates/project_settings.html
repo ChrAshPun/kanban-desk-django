@@ -1,0 +1,91 @@
+<!-- templates/project_view.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="project-sidebar">
+    <p class="title">PROJECTS</p>
+    <ul>
+      {% for project in projects %}
+      <li 
+        id="project-{{ project.pk }}"
+        class="{% if request.resolver_match.kwargs.pk == project.pk %}active-item{% endif %}"
+      >
+        <a href="{% url 'project:kanban' project.pk %}">
+          {{ project.name }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section class="project-settings-window main-window-margin">
+    <h2 class="project-title">{{ project.name }}</h2>
+    <nav class="project-navigation">
+      <a class="{% if request.resolver_match.view_name == 'project:kanban' %}active-item{% endif %}" href="{% url 'project:kanban' project.pk %}">
+        Kanban
+        <div class="teal-line"></div>
+      </a>
+      <a class="{% if request.resolver_match.view_name == 'project:settings' %}active-item{% endif %}" href="{% url 'project:settings' project.pk %}">
+        Settings
+        <div class="teal-line"></div>
+      </a>
+    </nav>
+    <section class="settings-section">
+      <h3 class="title">General</h3>
+      <form method="post" action="{% url 'project:update' project.pk %}">
+        {% csrf_token %}
+        <p class="k-input">
+          <label for="id_name">Name*</label>
+          <input type="text" name="name"placeholder="Name" required id="id_name" autofocus value="{{ project.name }}">
+        </p>
+        <p class="k-input">
+          <label for="id_description">Description</label>
+          <textarea name="description" id="id_description">{{ project.description }}</textarea>
+        </p>
+        <div class="btn-container">
+          <button class="k-btn teal-btn" type="submit">Update Project</button>
+        </div>
+      </form>
+    </section>
+    <section class="settings-section">
+      <h3 class="title">Deletion</h3>
+      <div class="delete-section">
+        <p>Delete this project and its existing tasks</p>
+        <button id="toggle-modal" class="k-btn sm-btn-margin danger-btn" type="submit">Delete Project</button>
+      </div>
+    </section>
+  </section>
+  <div id="target-modal" class="modal-dialog display-none">
+    <form method="post" action="{% url 'project:delete' project.pk %}">
+      {% csrf_token %}
+      <h2>Are you sure?</h2>
+      <p>You are about to delete your project "<span class="bold">{{ project.name }}</span>". Deleting this 
+        project will also delete all associated tasks.</p>
+      <div class="btn-container">
+        <button id="cancel-btn" class="k-btn cancel-btn">Cancel</button>
+        <button class="k-btn sm-btn-margin danger-btn" type="submit" value="Delete">Confirm Delete</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $("#toggle-modal").click(function() {
+        if ($('#target-modal').hasClass('display-none')) {
+          $("#target-modal").removeClass("display-none");
+          $("#target-modal").addClass("display-flex");
+          $("#target-modal").addClass("show-modal");
+        } else {
+          $("#target-modal").toggleClass("show-modal");
+          $("#target-modal").toggleClass("hide-modal");
+        }
+      });
+
+      $("#cancel-btn").click(function(event) {
+        event.preventDefault(); // do not submit form
+        $("#target-modal").removeClass("show-modal");
+        $("#target-modal").addClass("hide-modal");
+      });
+    });
+  </script>
+{% endblock %}

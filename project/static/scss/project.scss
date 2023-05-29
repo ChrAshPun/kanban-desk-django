@@ -1,15 +1,5 @@
 @import "../../../static/scss/variables.scss";
 
-.page-title {
-  color: $primary-black-color;
-  margin-bottom: 2px;
-}
-
-.page-title-detail {
-  color: #7c7c7c;
-  margin-bottom: 30px;
-}
-
 .project-sidebar {
   min-width: 240px;
   max-width: 240px;
@@ -51,10 +41,17 @@
 }
 
 .project-create-window {
-  width: 620px;
+  .page-title {
+    color: $primary-black-color;
+    margin-bottom: 2px;
+  }
+  .page-title-detail {
+    color: #7c7c7c;
+    margin-bottom: 30px;
+  }
 }
 
-.project-window {
+.project-kanban-window, .project-settings-window {
   flex: 1;
   height: 100%;
   .project-title {

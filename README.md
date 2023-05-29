@@ -600,6 +600,13 @@ COMPRESS_PRECOMPILERS = (
 ### Error: source_comments must be bool, not 'True'
 7. In order for SCSS to work, I needed to wrap `os.environ.get('DEBUG')` with `bool()`.
 
+### Error: source_comments must be bool, not 'True'
+8. compressor/css_file.html (Source does not exist). Make sure `APP_DIRS` is set to `True`
+TEMPLATES = [
+    ...
+    'APP_DIRS': True,
+]
+
 ### STATIC_ROOT
 `STATIC_ROOT` is a setting in Django that defines the root directory where the `collectstatic` command should collect all the static files and then stores the files in that directory.
 

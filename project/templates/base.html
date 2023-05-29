@@ -1,0 +1,62 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  {% load static %}
+  {% load compress %}
+
+  {% compress css %}
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/base.scss' %}" />
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/forms.scss' %}" />
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/project.scss' %}" />
+  <link rel="stylesheet" type="text/x-scss" href="{% static 'scss/user_settings.scss' %}" />
+  {% endcompress %}
+
+  <link rel="icon" type="image/png" href="{% static 'img/kanban-logo-teal.svg' %}">
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <meta charset="utf-8">
+  <title>{% block title %}Kanban Desk{% endblock %}</title>
+</head>  
+<body>
+  <nav class="top-navigation">
+    <section class="title primary-teal">
+      <img class="kanban-desk-logo" src="{% static 'img/kanban-logo-teal.svg' %}" alt="kanban-logo-teal.svg">
+      <p>Kanban Desk</p>
+    </section>
+    <a class="sign-out" href="{% url 'accounts:logout' %}">
+      <img src="{% static 'img/user.svg' %}" alt="user.svg">
+      <p>Sign Out</p>
+    </a>
+  </nav>
+  <main class="main-window">
+    <section class="general-sidebar">
+      <ul>
+        <li class="{% if request.resolver_match.view_name == 'project:create' %}active-item{% endif %}">
+          <a href="{% url 'project:create' %}">
+            <div class="item-white-bar"></div>
+            <img src="{% static 'img/project-add.svg' %}" alt="project-add.svg">
+          </a>
+        </li>
+        {% if first_project != -1 %}
+        <li 
+          class="{% if request.resolver_match.view_name == 'project:kanban' or request.resolver_match.view_name == 'project:settings' %}active-item{% endif %}">
+          <a href="{% url 'project:kanban' first_project.pk %}">
+            <div class="item-white-bar"></div>
+            <img src="{% static 'img/project-group.svg' %}" alt="project-group.svg">
+          </a>
+        </li>
+        {% endif %}
+        <li 
+          class="{% if request.resolver_match.view_name == 'accounts:settings' %}active-item{% endif %}">
+          <div class="item-white-bar"></div>
+          <a href="{% url 'accounts:settings' %}">
+            <img src="{% static 'img/settings.svg' %}" alt="settings.svg">
+          </a>
+        </li>
+      </ul>
+    </section>
+    {% block content %}
+    {% endblock %}
+  </main>
+</body>
+</html>

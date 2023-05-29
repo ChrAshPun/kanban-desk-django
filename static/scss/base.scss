@@ -198,11 +198,6 @@ h2, h3, h6, p {
   background-color: $primary-danger-color;
 }
 
-
-
-
-
-
 .modal-dialog {
   width: 700px;
   height: 100%;
@@ -214,9 +209,6 @@ h2, h3, h6, p {
   box-shadow: -4px 0 6px 6px rgba(0,0,0,0.10);
   form {
     width: 500px;
-    h2 {
-      margin-bottom: 30px;
-    }
     p {
       line-height: 1.8;
       margin-bottom: 15px;
@@ -233,8 +225,9 @@ h2, h3, h6, p {
 
 .display-flex {
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: stretch;
 }
 
 @keyframes show-modal {

@@ -12,18 +12,23 @@
     <form method="post">
       {% csrf_token %}
       <p class="k-input">
-        <label for="id_username">Username</label>
+        <label for="id_username">Username*</label>
         <input type="text" name="username" id="id_username" autofocus>
       </p>
       <p class="k-input">
-        <label for="id_password1">Password</label>
+        <label for="id_password1">Password*</label>
         <input type="password" name="password1" id="id_password1">
       </p>
       <p class="k-input">
-        <label for="id_password2">Retype Password</label>
+        <label for="id_password2">Retype Password*</label>
         <input type="password" name="password2" id="id_password2">
       </p>
-      <button class="guest-user-btn k-btn teal-btn full-width" type="submit">Sign Up</button>
+      {% if form.errors %}
+        {% for field_errors in form.errors.values %}
+          <p class="form-error">{{ field_errors.0 }}</p>
+        {% endfor %}
+      {% endif %}      
+      <button class="sign-in-btn k-btn teal-btn full-width" type="submit">Sign Up</button>
       <a class="k-btn teal-flat-btn full-width" href="{% url 'login' %}">Back to Sign In</a>
     </form>
   </div>

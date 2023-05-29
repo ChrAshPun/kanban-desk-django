@@ -1,0 +1,87 @@
+/* line 4, config/static/scss/forms.scss */
+.k-input {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 15px; }
+  /* line 11, config/static/scss/forms.scss */
+  .k-input label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #404040;
+    margin-bottom: 4px; }
+  /* line 17, config/static/scss/forms.scss */
+  .k-input input, .k-input select {
+    width: 100%;
+    height: 42px;
+    background-color: #ffffff;
+    padding: 0 10px;
+    border: solid 1px #C6C6C6;
+    border-radius: 4px; }
+  /* line 25, config/static/scss/forms.scss */
+  .k-input input::placeholder {
+    color: #C6C6C6; }
+  /* line 28, config/static/scss/forms.scss */
+  .k-input textarea {
+    width: 100%;
+    max-width: 500px;
+    height: 126px;
+    resize: none;
+    background-color: #ffffff;
+    padding: 10px;
+    border: solid 1px #C6C6C6;
+    border-radius: 4px; }
+
+/* line 40, config/static/scss/forms.scss */
+.btn-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 15px; }
+
+/* line 49, config/static/scss/forms.scss */
+.full-width {
+  width: 100%;
+  margin: 0; }
+
+/* line 54, config/static/scss/forms.scss */
+.sm-btn-margin {
+  margin-left: 10px; }
+
+/* line 58, config/static/scss/forms.scss */
+.k-btn {
+  font-size: 14px;
+  font-weight: 400;
+  padding: 11px 24px;
+  border: none;
+  border-radius: 2px;
+  text-decoration: none;
+  cursor: pointer; }
+
+/* line 68, config/static/scss/forms.scss */
+.cancel-btn {
+  color: #808080;
+  background-color: #EAEEF0; }
+
+/* line 73, config/static/scss/forms.scss */
+.teal-btn {
+  color: #ffffff;
+  background-color: #3AAFB9; }
+
+/* line 78, config/static/scss/forms.scss */
+.teal-flat-btn {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: #3AAFB9;
+  background-color: transparent;
+  cursor: pointer; }
+
+/* line 87, config/static/scss/forms.scss */
+.danger-btn {
+  color: #ffffff;
+  background-color: #CC2629; }

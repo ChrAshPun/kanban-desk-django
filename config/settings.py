@@ -56,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'config.middleware.AuthMiddleware',
+    # 'config.middleware.AuthMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -71,10 +71,12 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            BASE_DIR / "templates",
-            os.path.join(BASE_DIR, 'accounts', 'templates'),
+            BASE_DIR,
+            BASE_DIR / 'templates',
+            BASE_DIR / 'accounts/templates',
+            BASE_DIR / 'project/templates',
         ], # tell Django to look for a templates folder at the project level
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -141,8 +143,8 @@ STATIC_ROOT = BASE_DIR / 'static'
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [    
-    BASE_DIR / "config/static",   
-    BASE_DIR / "accounts/static",    
+    BASE_DIR / 'config/static',   
+    BASE_DIR / 'accounts/static',    
 ]
 
 

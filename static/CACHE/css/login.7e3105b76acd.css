@@ -1,0 +1,155 @@
+/* line 3, accounts/static/scss/login.scss */
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Helvetica Neue', sans-serif; }
+
+/* line 10, accounts/static/scss/login.scss */
+h2, h3, h6, p {
+  color: #404040; }
+
+/* line 14, accounts/static/scss/login.scss */
+html {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; }
+  /* line 18, accounts/static/scss/login.scss */
+  html body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; }
+    /* line 22, accounts/static/scss/login.scss */
+    html body .banner-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: auto;
+      z-index: -1; }
+    /* line 30, accounts/static/scss/login.scss */
+    html body .page-flex {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      align-items: stretch; }
+      /* line 38, accounts/static/scss/login.scss */
+      html body .page-flex .login-banner {
+        position: relative;
+        flex: 1; }
+        /* line 41, accounts/static/scss/login.scss */
+        html body .page-flex .login-banner .content {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: flex-start;
+          width: 100%;
+          max-width: 520px;
+          height: 500px;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: rgba(255, 255, 255, 0.12);
+          padding: 80px 50px;
+          z-index: 2; }
+          /* line 56, accounts/static/scss/login.scss */
+          html body .page-flex .login-banner .content .title {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            color: #ffffff;
+            margin-bottom: 50px; }
+            /* line 64, accounts/static/scss/login.scss */
+            html body .page-flex .login-banner .content .title .kanban-desk-logo {
+              width: 55px;
+              height: 55px;
+              margin-right: 20px; }
+            /* line 69, accounts/static/scss/login.scss */
+            html body .page-flex .login-banner .content .title h1 {
+              font-size: 52px; }
+              /* line 71, accounts/static/scss/login.scss */
+              html body .page-flex .login-banner .content .title h1 .primary-black {
+                color: #404040; }
+          /* line 76, accounts/static/scss/login.scss */
+          html body .page-flex .login-banner .content .by {
+            font-size: 26px;
+            font-weight: 600; }
+            /* line 79, accounts/static/scss/login.scss */
+            html body .page-flex .login-banner .content .by p {
+              margin: 8px 0; }
+          /* line 83, accounts/static/scss/login.scss */
+          html body .page-flex .login-banner .content .note-to-employers {
+            font-size: 16px;
+            font-weight: 500; }
+            /* line 86, accounts/static/scss/login.scss */
+            html body .page-flex .login-banner .content .note-to-employers p {
+              color: #ffffff;
+              margin: 4px 0;
+              line-height: 1.4; }
+              /* line 90, accounts/static/scss/login.scss */
+              html body .page-flex .login-banner .content .note-to-employers p .guest-user {
+                color: #404040;
+                font-weight: 600; }
+      /* line 98, accounts/static/scss/login.scss */
+      html body .page-flex .login-form {
+        flex: 1;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: #ffffff;
+        box-shadow: -4px 0 6px 6px rgba(0, 0, 0, 0.1); }
+        /* line 105, accounts/static/scss/login.scss */
+        html body .page-flex .login-form .auth-form {
+          width: 360px;
+          margin-left: 60px; }
+          /* line 108, accounts/static/scss/login.scss */
+          html body .page-flex .login-form .auth-form .title {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px; }
+            /* line 115, accounts/static/scss/login.scss */
+            html body .page-flex .login-form .auth-form .title .kanban-desk-logo {
+              width: 24px;
+              height: 24px;
+              margin-right: 10px; }
+            /* line 120, accounts/static/scss/login.scss */
+            html body .page-flex .login-form .auth-form .title h6 {
+              font-size: 22px; }
+          /* line 124, accounts/static/scss/login.scss */
+          html body .page-flex .login-form .auth-form h2 {
+            color: #404040;
+            margin-bottom: 30px; }
+          /* line 128, accounts/static/scss/login.scss */
+          html body .page-flex .login-form .auth-form .sign-in-btn {
+            margin-top: 20px; }
+          /* line 131, accounts/static/scss/login.scss */
+          html body .page-flex .login-form .auth-form .guest-user-btn {
+            margin-bottom: 5px; }
+          /* line 134, accounts/static/scss/login.scss */
+          html body .page-flex .login-form .auth-form .or-divider {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            color: #C6C6C6;
+            margin: 15px 0; }
+            /* line 142, accounts/static/scss/login.scss */
+            html body .page-flex .login-form .auth-form .or-divider p {
+              font-size: 12px;
+              margin: 0 20px; }
+            /* line 146, accounts/static/scss/login.scss */
+            html body .page-flex .login-form .auth-form .or-divider div {
+              width: 100%;
+              flex: 1;
+              height: 1px;
+              background-color: #C6C6C6; }

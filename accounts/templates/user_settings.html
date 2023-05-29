@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block content %}
-  <section class="user-settings-page main-window-padding">
+  <section class="user-settings-page main-window-margin">
     <main>
       <h2 class="page-title">Profile</h2>
       <p class="page-title-detail">Account settings</p>
@@ -22,7 +22,7 @@
       </div>
     </main>
     <div id="target-modal" class="modal-dialog display-none">
-      <form method="post" action="{% url 'accounts:delete' %}">
+      <form class="user-delete-form" method="post" action="{% url 'accounts:delete' %}">
         {% csrf_token %}
         <h2>Are you sure?</h2>
         <p>You are about to delete your account "<span class="bold">{{ user.username }}</span>". Deleting your 

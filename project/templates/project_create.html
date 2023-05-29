@@ -1,0 +1,24 @@
+<!-- templates/project_create.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="project-create-window main-window-margin">
+    <h2 class="page-title">New Project</h2>
+    <p class="page-title-detail">Create a new project</p>
+    <form method="post">
+      {% csrf_token %}
+      <p class="k-input">
+        <label for="id_name">Name</label>
+        <input type="text" name="name"placeholder="Name" required id="id_name" maxlength="50" autofocus>
+      </p>
+      <p class="k-input">
+        <label for="id_description">Description</label>
+        <textarea type="description" name="description" id="id_description" maxlength="100"></textarea>
+      </p>
+      <div class="btn-container">
+        <button class="k-btn teal-btn" type="submit">Create Project</button>
+      </div>
+    </form>
+  </section>
+{% endblock %}

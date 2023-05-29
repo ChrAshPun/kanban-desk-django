@@ -9,6 +9,7 @@
     align-items: flex-start;
     .user-info {
       width: 100%;
+      margin-top: 15px;
       .row {
         width: 100%;
         height: 42px;
@@ -24,6 +25,11 @@
       .row:last-child {      
         margin-bottom: 25px;
       }
+    }
+  }
+  .user-delete-form {
+    h2 {
+      margin-bottom: 15px;
     }
   }
 }
