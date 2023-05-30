@@ -826,6 +826,10 @@ https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/#upd
 
 In the case of the CreateView and UpdateView (and some other similar views), self.object represents the newly created or updated object that is associated with the form being processed. It is typically set after a successful form submission or update.
 
+
+
+
+
 ### Move on to hosting the project on the cloud
 ## Host a brand new Django project on AWS EC2 Ubuntu server on port :8000
 Notes: First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
@@ -893,18 +897,18 @@ DATABASES = {
     }
 }
 ```
-``python manage.py makemigrations``
-``python manage.py migrate``
+`python manage.py makemigrations`
+`python manage.py migrate`
 
-### chrashpun did not have the same privileges as postgres, needed to use these commands
+### <adminuser> did not have the same privileges as postgres, needed to use these commands
 Note: this user might not be necessary. Postgres user was used to create the kanbandesk database anyway.
 `CREATE USER myuser WITH PASSWORD 'mypassword';`
 `GRANT ALL PRIVILEGES ON DATABASE mydatabase TO myuser;`
-`GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO chrashpun;`
-`ALTER USER chrashpun CREATEDB;`
-`ALTER USER chrashpun WITH SUPERUSER;`
-`ALTER USER chrashpun WITH REPLICATION;`
-`ALTER USER chrashpun BYPASSRLS;`
+`GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO <adminuser>;`
+`ALTER USER <adminuser> CREATEDB;`
+`ALTER USER <adminuser> WITH SUPERUSER;`
+`ALTER USER <adminuser> WITH REPLICATION;`
+`ALTER USER <adminuser> BYPASSRLS;`
 `SELECT * FROM pg_user;`
 
 ## Now, Install Gunicorn
@@ -914,7 +918,7 @@ From ChatGPT:
 Concurrency and Performance: Gunicorn is designed to handle multiple concurrent requests efficiently. It can spawn multiple worker processes to handle incoming requests, allowing your Django application to handle multiple connections simultaneously and provide better performance under load.
 Process Management: Gunicorn manages the worker processes for your Django application. It handles spawning and managing the worker processes
 
-In virtual env - `pip install gunicorn`
+In virtual env - `pip install gunicorn` (this will add gunicorn to venv/bin/ )
 
 ### Configure gunicorn.socket
 `sudo nano /etc/systemd/system/gunicorn.socket`
@@ -934,10 +938,10 @@ Description=gunicorn daemon
 Requires=gunicorn.socket
 After=network.target
 [Service]
-User=chrashpun
+User=<adminuser>
 Group=www-data
-WorkingDirectory=/home/chrashpun/django/test-project
-ExecStart=/home/chrashpun/django/test-project/venv/bin/gunicorn \
+WorkingDirectory=/home/<adminuser>/django/test-project
+ExecStart=/home/<adminuser>/django/test-project/venv/bin/gunicorn \
 	--access-logfile — \
 	--workers 3 \
 	--bind unix:/run/gunicorn.sock \
@@ -965,11 +969,12 @@ Output
 `sudo systemctl restart gunicorn.socket gunicorn.service`
 
 ## Configure Nginx to Proxy Pass to Gunicorn
-sudo apt install nginx
-sudo nano /etc/nginx/sites-available/myproject
+`sudo apt install nginx`
+`sudo nano /etc/nginx/sites-available/myproject`
 ```
 server {
     listen 80;
+    listen [::]:80;
     server_name server_domain_or_IP;
 
     location = /favicon.ico { access_log off; log_not_found off; }
@@ -983,51 +988,103 @@ server {
     }
 }
 ```
-sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
-sudo nginx -t
-sudo systemctl restart nginx
+`sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled`
+`sudo nginx -t`
+`sudo systemctl restart nginx`
 
 ## Error: Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
 check NGINX error logs - sudo tail -F /var/log/nginx/error.log
 
 
+## Use Let's Encrypt / Certbot to configure SSL Certificate and enable encrypted HTTPS
 Reference articles: https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
 
 ### Update DNS records
-An A record with example.com pointing to your server’s public IP address.
-An A record with www.example.com pointing to your server’s public IP address.
+An `A record` with `example.com` pointing to your server’s public IP address.
+An `A record` with `www.example.com` pointing to your server’s public IP address.
 
-Certbot recommends using their snap package for installation. It includes an auto renew script.
-sudo snap install core; sudo snap refresh core
-sudo snap install --classic certbot
-
-Finally, you can link the certbot command from the snap install directory to your path, so you’ll be able to run it by just typing certbot.
-sudo ln -s /snap/bin/certbot /usr/bin/certbot
-
-Update the NGINX file
+### Update the NGINX file
+- `sudo nano /etc/nginx/sites-available/kanbandesk.com`
 ```
 ...
 server_name example.com www.example.com;
 ```
-sudo nginx -t
-sudo systemctl reload nginx
+- `sudo nginx -t`
+- `sudo systemctl reload nginx`
+
+### Install the snap package
+Certbot recommends using their snap package for installation. It includes an auto renew script.
+- `sudo snap install core; sudo snap refresh core`
+- `sudo snap install --classic certbot`
+
+Finally, you can link the certbot command from the snap install directory to your path, so you’ll be able to run it by just typing `certbot`.
+- `sudo ln -s /snap/bin/certbot /usr/bin/certbot`
 
 This runs certbot with the --nginx plugin, using -d to specify the domain names we’d like the certificate to be valid for
-sudo certbot --nginx -d example.com -d www.example.com
+Make sure to include my email because I need to knoow about auto renewals and certificate expirations.
+- `sudo certbot --nginx -d example.com -d www.example.com`
 
-The certbot package we installed (snap) takes care of this for us by adding a systemd timer that will run twice a day and automatically renew any certificate that’s within thirty days of expiration
-sudo systemctl status snap.certbot.renew.service
-do a dry run to verify that certbot is working properly
-sudo certbot renew --dry-run
-to renew all certs manually - sudo certbot renew 
+### Certificate autorenewal
+Let’s Encrypt’s certificates are only valid for ninety days.
+The certbot package we installed (snap) takes care of this for us by adding a systemd timer that will run twice a day and automatically renew any certificate that’s within thirty days of expiration.
+- `sudo systemctl status snap.certbot.renew.service`
+- do a dry run to verify that certbot is working properly - `sudo certbot renew --dry-run`
+- to renew all certs manually - `sudo certbot renew `
+
+### Congratulations, you finished hosting Kanban Desk!
+
+## Now host the true Django project
+Notes: The only difference with this second deployment is that I'm going to clone the project repo which is going to include setting up SSH connection with my Github account, environment variables, etc.
+
+### Setup an SSH key pair and clone the Git repo
+Note: To clone a Git repository using SSH, you need to set up an SSH key pair on your local machine and add the public key to your GitHub account.
+`ssh-keygen -t rsa -b 4096 -C "<email>"`
+copy - `cat /home/<adminuser>/.ssh/id_rsa.pub` 
+GitHub > Settings > SSH GPG keys > New SSH Key > copy paste to key textarea
+`git clone <git repo>`
+If needed, change name using - `mv command`
+
+## The cloned Django project needs some configuration before testing hosting on :8000
+### Some changes to the Django project
+- install python and pip - `sudo apt install python3 python3-pip python3-venv`
+- delete the venv and create a new one using `python3 -m venv venv`
+  - check `which python` and `which pip`
+- `pip install django`
+- delete the `static` folder and create a new one `python manage.py collectstatic`
+- Run the venv 
+- `pip install -r requirements.txt`
+
+## Configure environment variables
+### The settings.py file uses dotenv
+`pip install -r requirements.txt` or `pip install python-dotenv`
+
+### Create the .env file
+- add all needed variables
+
+### Install postgreSQL & psycopg2
+- install postgresql
+- install psycopg2 so Django can connect with PostgreSQL
+
+### Test hosting on port 0:8000
+Notes: Make sure all dependencies are covered. If everything was done correctly `python manage.py makemigrations` and `python manage.py migrate` should work.
+- run `python manage.py runserver 0:8000`
+
+## Yes!!! It's finally working. I can see Kanban Desk. Just configure Gunicorn, NGINX, and SSL (using CertBot)
+
+### Create needed users
+- create the Django admin using `python manage.py createsuperuser`
+- create the guestuser - make sure script is correct in `login.html`
+
+### Nginx return 403 forbidden error trying to access static files
+This is a permissions issue. www-data user does not have permission to access the static files. There's 2 way to fix this. I can add www-data to the <adminuser> group or I can relocate the static folder to `/var/www/html/static` since NGINX can access that directory.
+
+add www-data to <adminuser> group - `sudo usermod -a -G <adminuser> www-data`
+confirm www-data was added to the group - `groups www-data`
+
+## Congratulations
+Everything is has been configured correctly and I ran some tests using the guestuser account and it looks like everything is working.
 
 
-ssh-keygen -t rsa -b 4096 -C "<email>"
-GitHub > Settings > SSH GPG keys > New SSH Key
-cat /home/chrashpun/.ssh/id_rsa.pub 
-copy paste to key textarea
-git clone <git repo>
-change name using mv command if needed
 
 
 
@@ -1035,40 +1092,9 @@ change name using mv command if needed
 
 
 
-python3 manage.py makemigrations
-ModuleNotFoundError: No module named 'dotenv'
-
-requirements.txt needs to be included in the github repo
-pip install -r requirements.txt
-
-pip install psycopg2
-pip install python-dotenv
-pip install django_compressor django-libsass
-
-sudo apt-get install postgresql
-sudo service postgresql status
-sudo service postgresql start
-sudo -u postgres psql
-
-sudo apt install gunicorn
-go inside django project root directory - 'kanban-desk'
-gunicorn --bind 0.0.0.0:8000 config.wsgi
-gunicorn --bind 0.0.0.0:8000 PROJECT_NAME.wsgi --daemon
-Passing an argument --daemon which will run the server in background.
-
-https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-22-04
-
-Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
-A 502 error indicates that Nginx is unable to successfully proxy the request.
-
-use this command to troubleshoot. My gunicorn.service file had syntax errors.
-sudo tail -F /var/log/nginx/error.log
-
-sudo systemctl daemon-reload
-sudo systemctl restart gunicorn.socket gunicorn.service
 
 
-## Choices
+## Django models using Choices
 https://docs.djangoproject.com/en/4.2/ref/models/fields/#choices
 
 Need to add UPDATE existing user.
