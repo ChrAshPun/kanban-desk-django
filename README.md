@@ -826,11 +826,246 @@ https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/#upd
 
 In the case of the CreateView and UpdateView (and some other similar views), self.object represents the newly created or updated object that is associated with the form being processed. It is typically set after a successful form submission or update.
 
+### Move on to hosting the project on the cloud
+## Host a brand new Django project on AWS EC2 Ubuntu server on port :8000
+Notes: First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
+
+### Create Ubuntu EC2 instance
+- Select a key pair
+- Enable inbound for HTTP, HTTPS, and 8000 port from anywhere 0.0.0.0/0
+
+### Run Ubuntu updates
+- `sudo apt update`
+- `sudo apt upgrade`
+
+### SSH into Ubuntu server and create a superuser
+- `sudo adduser superuser`
+- `sudo usermod -aG sudo superuser`
+- `su - username`
+- `groups` - check priviledges/roles
+
+## Create a Django project and test hosting on port :8000
+### Install python and pip
+- `sudo apt install python3 python3-pip python3-venv`
+- `python3 -m venv venv`
+### Run the virtual env
+- `source venv/bin/activate`
+### Create a Django project
+- `which pip`
+- `pip install django`
+- `django-admin startproject config .`
+`settings.py` has to have this config to show the green rocket homepage:
+```
+DEBUG = True
+ALLOWED_HOSTS = ['*']
+```
+### Run the server, http://<ip>:8000 should work on browser
+- `which python`
+- `python manage.py migrate`
+- `python manage.py runserver 0:8000`
+
+## Connect Django to PostgreSQL
+### Install postgresql
+Note: I need to decide if I want to create a new psql user or just use the default postgres user
+- `sudo apt install postgresql postgresql-contrib libpq-dev`
+- `sudo -u postgres psql`
+- create a password - `\password postgres`
+- `CREATE DATABASE mydatabase;`
+- `\q`
+
+### Install psycopg2
+https://www.psycopg.org/install/
+Psycopg acts as the PostgreSQL database adapter for Django, enabling Django to communicate with the PostgreSQL database. Without it, I cannot run migrations.
+
+```pip install psycopg2```
+- make sure you have the necessary development files installed (such as libpq-dev).
+
+### config default database in settings.py
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'kanbandesk',
+	    'USER': 'postgres',
+	    'PASSWORD': '<password>',
+	    'HOST': 'localhost',
+	    'PORT': '5432',
+    }
+}
+```
+``python manage.py makemigrations``
+``python manage.py migrate``
+
+### chrashpun did not have the same privileges as postgres, needed to use these commands
+Note: this user might not be necessary. Postgres user was used to create the kanbandesk database anyway.
+`CREATE USER myuser WITH PASSWORD 'mypassword';`
+`GRANT ALL PRIVILEGES ON DATABASE mydatabase TO myuser;`
+`GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO chrashpun;`
+`ALTER USER chrashpun CREATEDB;`
+`ALTER USER chrashpun WITH SUPERUSER;`
+`ALTER USER chrashpun WITH REPLICATION;`
+`ALTER USER chrashpun BYPASSRLS;`
+`SELECT * FROM pg_user;`
+
+## Now, Install Gunicorn
+Reference article: https://medium.com/analytics-vidhya/dajngo-with-nginx-gunicorn-aaf8431dc9e0
+
+From ChatGPT:
+Concurrency and Performance: Gunicorn is designed to handle multiple concurrent requests efficiently. It can spawn multiple worker processes to handle incoming requests, allowing your Django application to handle multiple connections simultaneously and provide better performance under load.
+Process Management: Gunicorn manages the worker processes for your Django application. It handles spawning and managing the worker processes
+
+In virtual env - `pip install gunicorn`
+
+### Configure gunicorn.socket
+`sudo nano /etc/systemd/system/gunicorn.socket`
+```
+[Unit]
+Description=gunicorn socket
+[Socket]
+ListenStream=/run/gunicorn.sock
+[Install]
+WantedBy=sockets.target
+```
+### Configure gunicorn.service
+`sudo nano /etc/systemd/system/gunicorn.service`
+```
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+[Service]
+User=chrashpun
+Group=www-data
+WorkingDirectory=/home/chrashpun/django/test-project
+ExecStart=/home/chrashpun/django/test-project/venv/bin/gunicorn \
+	--access-logfile — \
+	--workers 3 \
+	--bind unix:/run/gunicorn.sock \
+	config.wsgi:application
+[Install]
+WantedBy=multi-user.target
+```
+### Enable the Gunicorn socket
+Start and enable the Gunicorn socket. This will create the socket file at `/run/gunicorn.sock` now and at boot. When a connection is made to that socket, `systemd` will automatically start the `gunicorn.service` to handle it.
+- `sudo systemctl start gunicorn.socket`
+- `sudo systemctl enable gunicorn.socket`
+
+### Check if the gunicorn.socker file exists in the /run directory
+- `file /run/gunicorn.sock`
+```
+Output
+/run/gunicorn.sock: socket
+```
+- troubleshoot using - `sudo journalctl -u gunicorn.socket`
+- to test the socket activation mechanism - `curl --unix-socket /run/gunicorn.sock localhost`
+- if curl indicates a problem check the logs - `sudo journalctl -u gunicorn` 
+
+###  Restart everything
+`sudo systemctl daemon-reload`
+`sudo systemctl restart gunicorn.socket gunicorn.service`
+
+## Configure Nginx to Proxy Pass to Gunicorn
+sudo apt install nginx
+sudo nano /etc/nginx/sites-available/myproject
+```
+server {
+    listen 80;
+    server_name server_domain_or_IP;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/sammy/myprojectdir;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+```
+sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx
+
+## Error: Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
+check NGINX error logs - sudo tail -F /var/log/nginx/error.log
+
+
+Reference articles: https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
+
+### Update DNS records
+An A record with example.com pointing to your server’s public IP address.
+An A record with www.example.com pointing to your server’s public IP address.
+
+Certbot recommends using their snap package for installation. It includes an auto renew script.
+sudo snap install core; sudo snap refresh core
+sudo snap install --classic certbot
+
+Finally, you can link the certbot command from the snap install directory to your path, so you’ll be able to run it by just typing certbot.
+sudo ln -s /snap/bin/certbot /usr/bin/certbot
+
+Update the NGINX file
+```
+...
+server_name example.com www.example.com;
+```
+sudo nginx -t
+sudo systemctl reload nginx
+
+This runs certbot with the --nginx plugin, using -d to specify the domain names we’d like the certificate to be valid for
+sudo certbot --nginx -d example.com -d www.example.com
+
+The certbot package we installed (snap) takes care of this for us by adding a systemd timer that will run twice a day and automatically renew any certificate that’s within thirty days of expiration
+sudo systemctl status snap.certbot.renew.service
+do a dry run to verify that certbot is working properly
+sudo certbot renew --dry-run
+to renew all certs manually - sudo certbot renew 
+
+
+ssh-keygen -t rsa -b 4096 -C "<email>"
+GitHub > Settings > SSH GPG keys > New SSH Key
+cat /home/chrashpun/.ssh/id_rsa.pub 
+copy paste to key textarea
+git clone <git repo>
+change name using mv command if needed
 
 
 
 
 
+
+
+python3 manage.py makemigrations
+ModuleNotFoundError: No module named 'dotenv'
+
+requirements.txt needs to be included in the github repo
+pip install -r requirements.txt
+
+pip install psycopg2
+pip install python-dotenv
+pip install django_compressor django-libsass
+
+sudo apt-get install postgresql
+sudo service postgresql status
+sudo service postgresql start
+sudo -u postgres psql
+
+sudo apt install gunicorn
+go inside django project root directory - 'kanban-desk'
+gunicorn --bind 0.0.0.0:8000 config.wsgi
+gunicorn --bind 0.0.0.0:8000 PROJECT_NAME.wsgi --daemon
+Passing an argument --daemon which will run the server in background.
+
+https://www.digitalocean.com/community/tutorials/how-to-set-up-django-with-postgres-nginx-and-gunicorn-on-ubuntu-22-04
+
+Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
+A 502 error indicates that Nginx is unable to successfully proxy the request.
+
+use this command to troubleshoot. My gunicorn.service file had syntax errors.
+sudo tail -F /var/log/nginx/error.log
+
+sudo systemctl daemon-reload
+sudo systemctl restart gunicorn.socket gunicorn.service
 
 
 ## Choices
