@@ -22,14 +22,15 @@ sqlparse==0.4.4
 **Notes:** First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
 
 ### Create Ubuntu EC2 instance
-- Select a key pair
-- Enable inbound for HTTPS, SSH, and 8000 port from anywhere 0.0.0.0/0
+- Select a key pair or create a new one
+- Enable inbound for HTTP, HTTPS, SSH, and 8000 port from any source (0.0.0.0/0)
 
 | Type   | Protocol | Port Range | Source    | Description (optional)    |
 | ------ |:--------:|:----------:|:---------:|:-------------------------:|
 | SSH    | TCP      | 22         | 0.0.0.0/0 | Allow SSH access          |
+| HTTP   | TCP      | 80         | 0.0.0.0/0 | Allow HTTP access         |
 | HTTPS  | TCP      | 443        | 0.0.0.0/0 | Allow HTTPS access        |
-| Custom | TCP      |  8000      | 0.0.0.0/0 | Allow access on port 8000 |
+| Custom | TCP      | 8000       | 0.0.0.0/0 | Allow access on port 8000 |
 
 ### Run Ubuntu updates
 - `sudo apt update`
