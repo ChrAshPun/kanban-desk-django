@@ -1,24 +1,61 @@
 # Kanban Desk
 A web application that functions as a personal management tool for creating projects and managing tasks. - 05/2023
 
-Operating System: macOS Ventura 13.2.1
-PostgreSQL: postgres (PostgreSQL) 15.2
-pgAdmin 4: v7.1
+**Operating System:** macOS Ventura 13.2.1<br/>
+**PostgreSQL:** postgres (PostgreSQL) 15.2<br/>
+**pgAdmin 4:** v7.1
 
 ### pip freeze:
-asgiref==3.6.0
-Django==4.2.1
-django-appconf==1.0.5
-django-compressor==4.3.1
-django-libsass==0.9
-libsass==0.22.0
-psycopg2==2.9.6
-python-dotenv==1.0.0
-rcssmin==1.1.1
-rjsmin==1.2.1
+asgiref==3.6.0<br/>
+Django==4.2.1<br/>
+django-appconf==1.0.5<br/>
+django-compressor==4.3.1<br/>
+django-libsass==0.9<br/>
+libsass==0.22.0<br/>
+psycopg2==2.9.6<br/>
+python-dotenv==1.0.0<br/>
+rcssmin==1.1.1<br/>
+rjsmin==1.2.1<br/>
 sqlparse==0.4.4
 
-### Week 01
+# Host a new Django project on AWS EC2 Ubuntu server on port :8000
+**Notes:** First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
+
+### Create Ubuntu EC2 instance
+- Select a key pair
+- Enable inbound for HTTP, HTTPS, and 8000 port from anywhere 0.0.0.0/0
+
+### Run Ubuntu updates
+- `sudo apt update`
+- `sudo apt upgrade`
+
+### SSH into Ubuntu server and create a superuser
+- `sudo adduser <new_username>` - create a new user account
+- `sudo usermod -aG sudo <new_username>` - grants administrative privileges
+- `su - <new_username>` - switch to another user account
+- `groups` - displays groups that current user belongs to
+  
+## Create a Django project and test hosting on port :8000
+### Install python and pip
+- `sudo apt install python3 python3-pip python3-venv`
+- `python3 -m venv venv`
+### Run the virtual env
+- `source venv/bin/activate`
+### Create a Django project
+- `which pip`
+- `pip install django`
+- `django-admin startproject config .`
+`settings.py` has to have this config to show the green rocket homepage:
+```
+DEBUG = True
+ALLOWED_HOSTS = ['*']
+```
+### Run the server, http://<ip>:8000 should work on browser
+- `which python`
+- `python manage.py migrate`
+- `python manage.py runserver 0:8000`
+
+# Week 01
 ## Create a Django project and connect to PostgreSQL
 Reference article: https://medium.com/@9cv9official/creating-a-django-web-application-with-a-postgresql-database-on-windows-c1eea38fe294
 
@@ -825,48 +862,6 @@ Outgoing to Client: Finally, the response, whether it's a rendered template or o
 https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/#updateview
 
 In the case of the CreateView and UpdateView (and some other similar views), self.object represents the newly created or updated object that is associated with the form being processed. It is typically set after a successful form submission or update.
-
-
-
-
-
-### Move on to hosting the project on the cloud
-## Host a brand new Django project on AWS EC2 Ubuntu server on port :8000
-Notes: First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
-
-### Create Ubuntu EC2 instance
-- Select a key pair
-- Enable inbound for HTTP, HTTPS, and 8000 port from anywhere 0.0.0.0/0
-
-### Run Ubuntu updates
-- `sudo apt update`
-- `sudo apt upgrade`
-
-### SSH into Ubuntu server and create a superuser
-- `sudo adduser superuser`
-- `sudo usermod -aG sudo superuser`
-- `su - username`
-- `groups` - check priviledges/roles
-
-## Create a Django project and test hosting on port :8000
-### Install python and pip
-- `sudo apt install python3 python3-pip python3-venv`
-- `python3 -m venv venv`
-### Run the virtual env
-- `source venv/bin/activate`
-### Create a Django project
-- `which pip`
-- `pip install django`
-- `django-admin startproject config .`
-`settings.py` has to have this config to show the green rocket homepage:
-```
-DEBUG = True
-ALLOWED_HOSTS = ['*']
-```
-### Run the server, http://<ip>:8000 should work on browser
-- `which python`
-- `python manage.py migrate`
-- `python manage.py runserver 0:8000`
 
 ## Connect Django to PostgreSQL
 ### Install postgresql
