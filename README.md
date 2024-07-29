@@ -21,7 +21,7 @@ sqlparse==0.4.4
 # Host a new Django project on AWS EC2 Ubuntu server on port :8000
 **Notes:** First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
 
-### Create Ubuntu EC2 instance
+### Create AWS Linux or Ubuntu EC2 instance
 - Select a key pair or create a new one
 - Enable inbound for HTTP, HTTPS, SSH, and 8000 port from any source (0.0.0.0/0)
 
@@ -32,11 +32,13 @@ sqlparse==0.4.4
 | HTTPS  | TCP      | 443        | 0.0.0.0/0 | Allow HTTPS access        |
 | Custom | TCP      | 8000       | 0.0.0.0/0 | Allow access on port 8000 |
 
-### Run Ubuntu updates
-- `sudo apt update`
-- `sudo apt upgrade`
+### SSH into Ubuntu server and run updates
+- `sudo apt update` - Updates the package index
+- `sudo apt upgrade` - Upgrades installed packages to the latest versions
 
-### SSH into Ubuntu server and create a superuser
+**Package Index:** A collection of metadata files about software packages available in repositories. Provides the information needed for searching, installing, and upgrading packages.
+
+### Create a superuser
 - `sudo adduser <new_username>` - create a new user account
 - `sudo usermod -aG sudo <new_username>` - grants administrative privileges
 - `su - <new_username>` - switch to another user account
