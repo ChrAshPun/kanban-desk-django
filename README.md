@@ -44,10 +44,34 @@ sqlparse==0.4.4
 - `su - <new_username>` - switch to another user account
 - `groups` - displays groups that current user belongs to
   
-## Create a Django project and test hosting on port :8000
-### Install python and pip
-- `sudo apt install python3 python3-pip python3-venv`
+## Create a Django project
+### Install pip and venv module
+- `sudo apt install python3-pip python3-venv`
 - `python3 -m venv venv`
+
+## Setup an SSH connection to GitHub from Local Ubuntu
+### Check for an existing SSH key pair
+- `cd ~/.ssh`
+- `ls`
+If you already have an SSH key pair, you should see files like `id_rsa` and `id_rsa.pub`.
+
+### Create a Virtual Enviroment
+- `python3 -m venv venv`
+
+**Note:** Django is a non-Debian-packaged Python package. It's best to set up a virtual environment.
+```
+error: externally-managed-environment
+× This environment is externally managed
+╰─> To install Python packages system-wide, try apt install
+    python3-xyz, where xyz is the package you are trying to
+    install.
+    
+If you wish to install a non-Debian-packaged Python package,
+create a virtual environment using python3 -m venv path/to/venv.
+Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
+sure you have python3-full installed.
+```
+
 ### Run the virtual env
 - `source venv/bin/activate`
 ### Create a Django project
