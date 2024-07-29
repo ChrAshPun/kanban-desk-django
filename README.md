@@ -23,7 +23,13 @@ sqlparse==0.4.4
 
 ### Create Ubuntu EC2 instance
 - Select a key pair
-- Enable inbound for HTTP, HTTPS, and 8000 port from anywhere 0.0.0.0/0
+- Enable inbound for HTTPS, SSH, and 8000 port from anywhere 0.0.0.0/0
+
+| Type   | Protocol | Port Range | Source    | Description (optional)    |
+| ------ |:--------:|:----------:|:---------:|:-------------------------:|
+| SSH    | TCP      | 22         | 0.0.0.0/0 | Allow SSH access          |
+| HTTPS  | TCP      | 443        | 0.0.0.0/0 | Allow HTTPS access        |
+| Custom | TCP      |  8000      | 0.0.0.0/0 | Allow access on port 8000 |
 
 ### Run Ubuntu updates
 - `sudo apt update`
