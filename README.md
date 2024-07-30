@@ -18,7 +18,7 @@ rcssmin==1.1.1<br/>
 rjsmin==1.2.1<br/>
 sqlparse==0.4.4
 
-# Host a new Django project on AWS EC2 Ubuntu server on port :8000
+## Host a new Django project on AWS EC2 Ubuntu server on port :8000
 **Notes:** First, I'm going to test how to host a brand new Django project on an EC2 instance without using NGINX, Gunicorn, or PostgreSQL. I'll add those services as I go.
 
 ### Create AWS Linux or Ubuntu EC2 instance
@@ -54,6 +54,26 @@ sqlparse==0.4.4
 - `cd ~/.ssh`
 - `ls`
 If you already have an SSH key pair, you should see files like `id_rsa` and `id_rsa.pub`.
+
+### Generate a keypair if you need to
+`ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
+`-t rsa` - Specifies the type of key to create, in this case, an RSA key.
+`-b 4096` - Specifies the number of bits in the key, in this case, 4096 bits for strong security.
+`-C "your_email@example.com"` - Adds a label to the key, typically your email address.
+
+### Add the public key to your GitHub
+Copy the entire output from `cat ~/.ssh/id_rsa.pub`
+
+Go to GitHub > login > click on your profile at top-right > Settings > SSH and GPG keys > New SSH key > paste public key
+Your GitHub account has now been updated with your SSH key. You may use it to communicate with your repositories and securely authenticate.
+
+### Test the SSH connection
+```
+$ git config --global user.name "ChrAshPun"
+$ git config --global user.email "christinaapunla@gmail.com"
+$ ssh -T git@github.com
+Hi ChrAshPun! You've successfully authenticated, but GitHub does not provide shell access.
+```
 
 ### Create a Virtual Enviroment
 - `python3 -m venv venv`
