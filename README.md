@@ -55,7 +55,7 @@ sqlparse==0.4.4
 - `ls`
 If you already have an SSH key pair, you should see files like `id_rsa` and `id_rsa.pub`.
 
-### Generate a keypair if you need to
+### Generate a keypair for SSH
 `ssh-keygen -t rsa -b 4096 -C "your_email@example.com"`
 `-t rsa` - Specifies the type of key to create, in this case, an RSA key.
 `-b 4096` - Specifies the number of bits in the key, in this case, 4096 bits for strong security.
@@ -69,16 +69,13 @@ Your GitHub account has now been updated with your SSH key. You may use it to co
 
 ### Test the SSH connection
 ```
-$ git config --global user.name "ChrAshPun"
-$ git config --global user.email "christinaapunla@gmail.com"
+$ git config --global user.name "<username>"
+$ git config --global user.email "<email>"
 $ ssh -T git@github.com
-Hi ChrAshPun! You've successfully authenticated, but GitHub does not provide shell access.
+Hi <username>! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
-### Create a Virtual Enviroment
-- `python3 -m venv venv`
-
-**Note:** Django is a non-Debian-packaged Python package. It's best to set up a virtual environment.
+**Note:** Django is a non-Debian-packaged Python package. When I attempted to run `pip install django` I got an error. I can still install Django globally using the `python3-` prefix, but it's best practice to set up a virtual environment instead.
 ```
 error: externally-managed-environment
 × This environment is externally managed
@@ -92,10 +89,14 @@ Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make
 sure you have python3-full installed.
 ```
 
+### Create a Virtual Enviroment
+In the root folder, run `python3 -m venv venv`
+
 ### Run the virtual env
 - `source venv/bin/activate`
+  
 ### Create a Django project
-- `which pip`
+- `which pip` path should point to the virtual env
 - `pip install django`
 - `django-admin startproject config .`
 `settings.py` has to have this config to show the green rocket homepage:
