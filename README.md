@@ -114,7 +114,7 @@ Note: I need to decide if I want to create a new psql user or just use the defau
 - `sudo apt install postgresql postgresql-contrib` - install PostgreSQL database server
 - `sudo -u postgres psql` - Launch PostgreSQL CLI using the default superuser
 - `\password postgres` - set password for postgres superuser
-- `CREATE DATABASE <database_name>;`
+- `CREATE DATABASE <database_name>;` - database name should match `DB_NAME`
 - `\q`
 
 ### Configure ALLOWED_HOSTS
@@ -123,6 +123,14 @@ Note: I need to decide if I want to create a new psql user or just use the defau
 ### Run the server, http://<ip>:8000 should work on browser
 - `python manage.py migrate`
 - `python manage.py runserver 0:8000`
+
+### Create guestuser
+- create the Django admin user - `python manage.py createsuperuser`
+- create the guestuser from `/admin`<br/>
+  make sure the credentials match `login.html`
+
+
+
 
 
 
@@ -303,6 +311,10 @@ By default, Django looks for the `auth` HTML templates in `/templates/registrati
 If we go to the Django GitHub repo, we can check out the `auth` app and all of its files.
 On line 72, it says `template_name = "registration/login.html"` confirming the name of the template that will be rendered. If the `login.html` file is found, it will be used as the template to render the response.
 https://github.com/django/django/blob/main/django/contrib/auth/views.py#L72
+
+`LOGIN_URL`
+Default: `'/accounts/login/'`
+The URL or named URL pattern where requests are redirected for login when using the `login_required()` decorator, `LoginRequiredMixin`, or `AccessMixin`.
 
 ### Tell Django to look for a templates folder at the project level
 ```
