@@ -117,6 +117,11 @@ Note: I need to decide if I want to create a new psql user or just use the defau
 - `CREATE DATABASE <database_name>;` - database name should match `DB_NAME`
 - `\q`
 
+### Create guestuser
+- create the Django admin user - `python manage.py createsuperuser`
+- create the guestuser from `/admin`<br/>
+  make sure the credentials match `login.html`
+
 ### Configure ALLOWED_HOSTS
 `ALLOWED_HOSTS = ['kanbandesk.com', 'www.kanbandesk.com', '<server_ip>']`
 
@@ -124,10 +129,144 @@ Note: I need to decide if I want to create a new psql user or just use the defau
 - `python manage.py migrate`
 - `python manage.py runserver 0:8000`
 
-### Create guestuser
-- create the Django admin user - `python manage.py createsuperuser`
-- create the guestuser from `/admin`<br/>
-  make sure the credentials match `login.html`
+## Now, Install Gunicorn
+Reference article: https://medium.com/analytics-vidhya/dajngo-with-nginx-gunicorn-aaf8431dc9e0
+
+From ChatGPT:
+Concurrency and Performance: Gunicorn is designed to handle multiple concurrent requests efficiently. It can spawn multiple worker processes to handle incoming requests, allowing your Django application to handle multiple connections simultaneously and provide better performance under load.
+Process Management: Gunicorn manages the worker processes for your Django application. It handles spawning and managing the worker processes
+
+In virtual env - `pip install gunicorn` (this will add gunicorn to venv/bin/ )
+
+### Configure gunicorn.socket
+A socket is an endpoint for sending or receiving data across a network. In this case, `gunicorn.socket` is responsible for creating a Unix domain socket (or TCP socket) that listens for incoming requests.
+
+`sudo nano /etc/systemd/system/gunicorn.socket` - create socket
+
+Add the following:
+```
+[Unit]
+Description=gunicorn socket
+[Socket]
+ListenStream=/run/gunicorn.sock
+[Install]
+WantedBy=sockets.target
+```
+
+### Configure gunicorn.service
+`sudo nano /etc/systemd/system/gunicorn.service` - create the systemd service file
+
+```
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+[Service]
+User=<adminuser>
+Group=www-data
+WorkingDirectory=/home/<adminuser>/django/test-project
+ExecStart=/home/<adminuser>/django/test-project/venv/bin/gunicorn \
+	--access-logfile — \
+	--workers 3 \
+	--bind unix:/run/gunicorn.sock \
+	config.wsgi:application
+[Install]
+WantedBy=multi-user.target
+```
+
+### Enable the Gunicorn socket
+Start and enable the Gunicorn socket. This will create the socket file at `/run/gunicorn.sock` now and at boot. When a connection is made to that socket, `systemd` will automatically start the `gunicorn.service` to handle it.
+- `sudo systemctl start gunicorn.socket`
+- `sudo systemctl enable gunicorn.socket`
+
+### Check if the gunicorn.socket file exists in the /run directory
+- `file /run/gunicorn.sock`
+- 
+```
+Expected Output
+/run/gunicorn.sock: socket
+```
+
+- troubleshoot using - `sudo journalctl -u gunicorn.socket`
+- to test the socket activation mechanism - `curl --unix-socket /run/gunicorn.sock localhost`
+- if curl indicates a problem check the logs - `sudo journalctl -u gunicorn` 
+
+###  Restart everything
+`sudo systemctl daemon-reload`
+`sudo systemctl restart gunicorn.socket gunicorn.service`
+
+## Configure Nginx to Proxy Pass to Gunicorn
+`sudo apt install nginx` - install NGINX
+`sudo nano /etc/nginx/sites-available/<project_name>` - create a server file
+
+```
+server {
+    listen 80;
+    listen [::]:80;
+    server_name <example.com> <www.example.com> <server_ip>;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location /static/ {
+        root /home/<username>/<project>;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/run/gunicorn.sock;
+    }
+}
+```
+
+`sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled` - create a soft link
+`sudo nginx -t` - test the configuration
+`sudo systemctl restart nginx` - restart the service
+
+## Error: Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
+check NGINX error logs - sudo tail -F /var/log/nginx/error.log
+
+## Use Let's Encrypt / Certbot to configure SSL Certificate and enable encrypted HTTPS
+Reference articles: https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
+
+### Update DNS records
+An `A record` with `example.com` pointing to your server’s public IP address.
+An `A record` with `www.example.com` pointing to your server’s public IP address.
+
+### Install the snap package
+Certbot recommends using their snap package for installation. It includes an auto renew script.
+- `sudo snap install core; sudo snap refresh core`
+- `sudo snap install --classic certbot`
+
+Finally, you can link the certbot command from the snap install directory to your path, so you’ll be able to run it by just typing `certbot`.
+- `sudo ln -s /snap/bin/certbot /usr/bin/certbot`
+
+This runs certbot with the `--nginx` plugin, using -d to specify the domain names we’d like the certificate to be valid for
+Make sure to include my email because I need to knoow about auto renewals and certificate expirations.
+- `sudo certbot --nginx -d <example.com> -d <www.example.com>`
+
+### Certificate autorenewal
+Let’s Encrypt’s certificates are only valid for ninety days.
+The certbot package we installed (snap) takes care of this for us by adding a systemd timer that will run twice a day and automatically renew any certificate that’s within thirty days of expiration.
+- `sudo systemctl status snap.certbot.renew.service`
+- do a dry run to verify that certbot is working properly - `sudo certbot renew --dry-run`
+- to renew all certs manually - `sudo certbot renew `
+
+## CSS Issue
+Everything was working besides the static files. Inspect > Network tab > all static files were returning: `403 forbidden`
+This is due to NGINX not having permissions to read the static folder.
+
+edit conf file - `sudo nano /etc/nginx/nginx.conf`
+change `user www-data` to `chrashpun` or give the `www-data` user higher priviledges (same group admin is part of).
+
+## Congratulations, you finished hosting Kanban Desk!
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1002,128 +1141,6 @@ Note: this user might not be necessary. Postgres user was used to create the kan
 `ALTER USER <adminuser> BYPASSRLS;`
 `SELECT * FROM pg_user;`
 
-## Now, Install Gunicorn
-Reference article: https://medium.com/analytics-vidhya/dajngo-with-nginx-gunicorn-aaf8431dc9e0
-
-From ChatGPT:
-Concurrency and Performance: Gunicorn is designed to handle multiple concurrent requests efficiently. It can spawn multiple worker processes to handle incoming requests, allowing your Django application to handle multiple connections simultaneously and provide better performance under load.
-Process Management: Gunicorn manages the worker processes for your Django application. It handles spawning and managing the worker processes
-
-In virtual env - `pip install gunicorn` (this will add gunicorn to venv/bin/ )
-
-### Configure gunicorn.socket
-`sudo nano /etc/systemd/system/gunicorn.socket`
-```
-[Unit]
-Description=gunicorn socket
-[Socket]
-ListenStream=/run/gunicorn.sock
-[Install]
-WantedBy=sockets.target
-```
-### Configure gunicorn.service
-`sudo nano /etc/systemd/system/gunicorn.service`
-```
-[Unit]
-Description=gunicorn daemon
-Requires=gunicorn.socket
-After=network.target
-[Service]
-User=<adminuser>
-Group=www-data
-WorkingDirectory=/home/<adminuser>/django/test-project
-ExecStart=/home/<adminuser>/django/test-project/venv/bin/gunicorn \
-	--access-logfile — \
-	--workers 3 \
-	--bind unix:/run/gunicorn.sock \
-	config.wsgi:application
-[Install]
-WantedBy=multi-user.target
-```
-### Enable the Gunicorn socket
-Start and enable the Gunicorn socket. This will create the socket file at `/run/gunicorn.sock` now and at boot. When a connection is made to that socket, `systemd` will automatically start the `gunicorn.service` to handle it.
-- `sudo systemctl start gunicorn.socket`
-- `sudo systemctl enable gunicorn.socket`
-
-### Check if the gunicorn.socker file exists in the /run directory
-- `file /run/gunicorn.sock`
-```
-Output
-/run/gunicorn.sock: socket
-```
-- troubleshoot using - `sudo journalctl -u gunicorn.socket`
-- to test the socket activation mechanism - `curl --unix-socket /run/gunicorn.sock localhost`
-- if curl indicates a problem check the logs - `sudo journalctl -u gunicorn` 
-
-###  Restart everything
-`sudo systemctl daemon-reload`
-`sudo systemctl restart gunicorn.socket gunicorn.service`
-
-## Configure Nginx to Proxy Pass to Gunicorn
-`sudo apt install nginx`
-`sudo nano /etc/nginx/sites-available/myproject`
-```
-server {
-    listen 80;
-    listen [::]:80;
-    server_name server_domain_or_IP;
-
-    location = /favicon.ico { access_log off; log_not_found off; }
-    location /static/ {
-        root /home/sammy/myprojectdir;
-    }
-
-    location / {
-        include proxy_params;
-        proxy_pass http://unix:/run/gunicorn.sock;
-    }
-}
-```
-`sudo ln -s /etc/nginx/sites-available/myproject /etc/nginx/sites-enabled`
-`sudo nginx -t`
-`sudo systemctl restart nginx`
-
-## Error: Nginx Is Displaying a 502 Bad Gateway Error Instead of the Django Application
-check NGINX error logs - sudo tail -F /var/log/nginx/error.log
-
-
-## Use Let's Encrypt / Certbot to configure SSL Certificate and enable encrypted HTTPS
-Reference articles: https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-22-04
-
-### Update DNS records
-An `A record` with `example.com` pointing to your server’s public IP address.
-An `A record` with `www.example.com` pointing to your server’s public IP address.
-
-### Update the NGINX file
-- `sudo nano /etc/nginx/sites-available/kanbandesk.com`
-```
-...
-server_name example.com www.example.com;
-```
-- `sudo nginx -t`
-- `sudo systemctl reload nginx`
-
-### Install the snap package
-Certbot recommends using their snap package for installation. It includes an auto renew script.
-- `sudo snap install core; sudo snap refresh core`
-- `sudo snap install --classic certbot`
-
-Finally, you can link the certbot command from the snap install directory to your path, so you’ll be able to run it by just typing `certbot`.
-- `sudo ln -s /snap/bin/certbot /usr/bin/certbot`
-
-This runs certbot with the --nginx plugin, using -d to specify the domain names we’d like the certificate to be valid for
-Make sure to include my email because I need to knoow about auto renewals and certificate expirations.
-- `sudo certbot --nginx -d example.com -d www.example.com`
-
-### Certificate autorenewal
-Let’s Encrypt’s certificates are only valid for ninety days.
-The certbot package we installed (snap) takes care of this for us by adding a systemd timer that will run twice a day and automatically renew any certificate that’s within thirty days of expiration.
-- `sudo systemctl status snap.certbot.renew.service`
-- do a dry run to verify that certbot is working properly - `sudo certbot renew --dry-run`
-- to renew all certs manually - `sudo certbot renew `
-
-### Congratulations, you finished hosting Kanban Desk!
-
 ## Now host the true Django project
 Notes: The only difference with this second deployment is that I'm going to clone the project repo which is going to include setting up SSH connection with my Github account, environment variables, etc.
 
@@ -1202,10 +1219,10 @@ Need to add UPDATE existing user.
 Notes: changed null=True to default=""
 
 ### How to set up Django and Gunicorn on Ubuntu server
-1. Create a virtual environment - python3 -m venv venv
-2. Activate virtual environment - source venv/bin/activate
-2. Install dependencies - pip3 install -r requirements.txt
-3. Install gunicorn - pip3 install gunicorn (this will add gunicorn to venv/bin/ )
+1. Create a virtual environment - `python3 -m venv venv`
+2. Activate virtual environment - `source venv/bin/activate`
+2. Install dependencies - `pip3 install -r requirements.txt`
+3. Install gunicorn - `pip3 install gunicorn` (this will add gunicorn to venv/bin/ )
 4. Check if Gunicorn can host project - gunicorn <django project>.wsgi:application --bind 0.0.0.0:8000
 5. Configure gunicorn service file: /etc/systemd/system/gunicorn.service
 6. Run these commands: 
