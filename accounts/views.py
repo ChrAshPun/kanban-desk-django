@@ -1,14 +1,38 @@
 # accounts/views.py
+
+# Standard library imports
+import os
+
+# Third-party imports
+from dotenv import load_dotenv
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import logout, get_user_model, authenticate, login
 from django.views.generic import CreateView, DeleteView, TemplateView
-from django.urls import reverse_lazy
+
+# Local application imports
 from project.models import Project
 from config.mixins import GetFirstProjectMixin
 
+# Load environment variables
+load_dotenv()
+
 User = get_user_model()
+
+def guest_login(request):
+    # Get credentials from environment variables
+    username = os.getenv('GUEST_USERNAME')
+    password = os.getenv('GUEST_PASSWORD')
+
+    # Attempt to authenticate the user
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        login(request, user)
+        return redirect('home')
 
 class SignUpView(CreateView):
     form_class = UserCreationForm

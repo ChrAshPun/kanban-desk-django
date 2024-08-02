@@ -30,18 +30,11 @@
         <p>or</p>
         <div></div>
       </div>
-      <button id="guest-user-btn" class="guest-user-btn k-btn teal-btn full-width">Sign In as Guest User</button>
-      <a class="k-btn teal-flat-btn full-width" href="{% url 'accounts:signup' %}">Create Account</a>
     </form>
+      <button class="guest-user-btn k-btn teal-btn full-width">
+        <a href="{% url 'accounts:guest-login' %}">Sign In as Guest User</a>
+      </button>
+      </a>
+      <a class="k-btn teal-flat-btn full-width" href="{% url 'accounts:signup' %}">Create Account</a>
   </div>
-
-  <script>
-    $(document).ready(function() {
-      $('#guest-user-btn').click(function() {
-        $('#id_username').val('guestuser');
-        $('#id_password').val('kanban123!');
-        $('#login-form').submit();
-      });
-    });
-  </script>
 {% endblock %}
