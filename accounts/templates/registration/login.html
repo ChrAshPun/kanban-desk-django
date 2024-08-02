@@ -31,10 +31,7 @@
         <div></div>
       </div>
     </form>
-      <button class="guest-user-btn k-btn teal-btn full-width">
-        <a href="{% url 'accounts:guest-login' %}">Sign In as Guest User</a>
-      </button>
-      </a>
+      <a class="guest-user-btn k-btn teal-btn full-width" href="{% url 'accounts:guest-login' %}">Sign In as Guest User</a>
       <a class="k-btn teal-flat-btn full-width" href="{% url 'accounts:signup' %}">Create Account</a>
   </div>
 {% endblock %}

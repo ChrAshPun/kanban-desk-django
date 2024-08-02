@@ -132,11 +132,9 @@ html {
             margin: 15px 0 5px 0;
           }
           .guest-user-btn {
+            display: block;
+            text-align: center;
             margin: 5px 0;
-            a {
-              color: $primary-white-color;
-              text-decoration: none;
-            }
           }
           .or-divider {
             width: 100%;
